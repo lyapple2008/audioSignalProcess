@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{80953EA3-2B2D-4017-82EF-D17E41AE78C7}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>libapm</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>../;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>../;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;WEBRTC_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy $(ProjectDir)include\apm_ns.h $(ProjectDir)..\finalVersion\include\
+copy $(OutDir)$(ProjectName).lib $(Outdir)..\finalVersion\lib\$(ProjectName)_d.lib</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;WEBRTC_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(ProjectName).lib $(OutDir)..\finalVersion\lib\$(ProjectName).lib</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\webrtc\base\checks.h" />
+    <ClInclude Include="..\webrtc\common_audio\include\audio_util.h" />
+    <ClInclude Include="..\webrtc\common_audio\resampler\include\push_resampler.h" />
+    <ClInclude Include="..\webrtc\common_audio\resampler\include\resampler.h" />
+    <ClInclude Include="..\webrtc\common_audio\resampler\push_sinc_resampler.h" />
+    <ClInclude Include="..\webrtc\common_audio\resampler\sinc_resampler.h" />
+    <ClInclude Include="..\webrtc\common_audio\resampler\sinusoidal_linear_chirp_source.h" />
+    <ClInclude Include="..\webrtc\modules\audio_processing\audio_buffer.h" />
+    <ClInclude Include="..\webrtc\modules\audio_processing\channel_buffer.h" />
+    <ClInclude Include="..\webrtc\modules\audio_processing\ns\defines.h" />
+    <ClInclude Include="..\webrtc\modules\audio_processing\ns\include\noise_suppression.h" />
+    <ClInclude Include="..\webrtc\modules\audio_processing\ns\ns_core.h" />
+    <ClInclude Include="..\webrtc\modules\audio_processing\ns\windows_private.h" />
+    <ClInclude Include="..\webrtc\modules\audio_processing\splitting_filter.h" />
+    <ClInclude Include="..\webrtc\modules\audio_processing\utility\fft4g.h" />
+    <ClInclude Include="..\webrtc\system_wrappers\interface\aligned_malloc.h" />
+    <ClInclude Include="..\webrtc\system_wrappers\interface\cpu_features_wrapper.h" />
+    <ClInclude Include="include\apm_ns.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\webrtc\base\checks.cc" />
+    <ClCompile Include="..\webrtc\common_audio\audio_util.cc" />
+    <ClCompile Include="..\webrtc\common_audio\resampler\push_resampler.cc" />
+    <ClCompile Include="..\webrtc\common_audio\resampler\push_sinc_resampler.cc" />
+    <ClCompile Include="..\webrtc\common_audio\resampler\resampler.cc" />
+    <ClCompile Include="..\webrtc\common_audio\resampler\sinc_resampler.cc" />
+    <ClCompile Include="..\webrtc\common_audio\resampler\sinc_resampler_sse.cc" />
+    <ClCompile Include="..\webrtc\common_audio\resampler\sinusoidal_linear_chirp_source.cc" />
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\splitting_filter_c.c" />
+    <ClCompile Include="..\webrtc\modules\audio_processing\audio_buffer.cc" />
+    <ClCompile Include="..\webrtc\modules\audio_processing\channel_buffer.cc" />
+    <ClCompile Include="..\webrtc\modules\audio_processing\ns\noise_suppression.c" />
+    <ClCompile Include="..\webrtc\modules\audio_processing\ns\ns_core.c" />
+    <ClCompile Include="..\webrtc\modules\audio_processing\splitting_filter.cc" />
+    <ClCompile Include="..\webrtc\modules\audio_processing\utility\fft4g.c" />
+    <ClCompile Include="..\webrtc\system_wrappers\source\aligned_malloc.cc" />
+    <ClCompile Include="..\webrtc\system_wrappers\source\cpu_features.cc" />
+    <ClCompile Include="src\apm_ns.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
