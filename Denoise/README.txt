@@ -1,0 +1,1 @@
+denoise_filter_coef.mat is a high-pass filter
