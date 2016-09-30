@@ -5,8 +5,10 @@
 #include "../webrtc/typedefs.h"
 extern "C"{
 #include "../wav_io.h"
-//test
+#include "../libapm/src/highpass_filter.h"
 }
+
+
 
 int main(int argc, char* argv[])
 {
@@ -49,21 +51,23 @@ int main(int argc, char* argv[])
 	int16_t channels = header.format.channels;
 	APM_NS ns_module;
 	ns_module.initNsModule(frequency, Ns_Mode_Mideum, length, channels);
-	int16_t *input = (int16_t *)new short[length];
-	int16_t *output = (int16_t *)new short[length];
+	int16_t *input = new int16_t[channels*length];
 
-	memset(input, 0, length*sizeof(int16_t));
-	memset(output, 0, length*sizeof(int16_t));
+	memset(input, 0, channels*length*sizeof(int16_t));
+
+	//FilterState_t state;
+	//initFilter(&state);
 
 	int32_t frm_cnt = 0;
 
 	while (!feof(fr))
 	{
-		read_samples(input, length, &header, fr);
+		int readed = read_samples(input, channels*length, &header, fr);
 
-		ns_module.processCaptureStream(input, length, channels);
+		ns_module.processCaptureStream(input, readed/channels, channels);
+		//filter_int16(&state, input, readed);
 
-		write_samples(input, length, &header, fw);
+		write_samples(input, readed, &header, fw);
 
 		printf("Frame #%d\n", frm_cnt++);
 	}
@@ -71,8 +75,7 @@ int main(int argc, char* argv[])
 	fclose(fr);
 	fclose(fw);
 
-	delete[]input;
-	delete[]output;
+	delete [] input;
 
 	return 0;
 }
