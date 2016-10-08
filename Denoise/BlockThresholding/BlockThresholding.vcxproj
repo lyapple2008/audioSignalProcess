@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2D223C26-19BD-47EB-8C98-472E31DA1525}</ProjectGuid>
+    <ProjectGuid>{B609BD85-8119-49A0-BB31-276F26875550}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>AudioDenoise</RootNamespace>
+    <RootNamespace>BlockThresholding</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
