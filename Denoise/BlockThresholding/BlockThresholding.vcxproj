@@ -80,10 +80,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\common\kiss_fft\kiss_fft.c" />
     <ClCompile Include="..\..\common\wav_parser\wav_io.c" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="unittest_fft.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\common\kiss_fft\kiss_fft.h" />
+    <ClInclude Include="..\..\common\kiss_fft\_kiss_fft_guts.h" />
     <ClInclude Include="..\..\common\wav_parser\wav_io.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

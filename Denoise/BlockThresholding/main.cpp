@@ -47,6 +47,8 @@ int main(int argc, char *argv[])
 	read_header(&wavHeader, pInFile);
 	write_header(&wavHeader, pOutFile);
 
+	short *inbuf = (short *)
+
 
 	return 0;
 }
