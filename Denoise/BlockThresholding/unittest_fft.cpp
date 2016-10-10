@@ -19,7 +19,7 @@ void saveResult(kiss_fft_cpx *result, int32_t len, const char *outfile)
 
 int main(int argc, char *argv[])
 {
-	int32_t len = 1024;
+	int32_t len = 551;
 	kiss_fft_cpx *fin = (kiss_fft_cpx *)malloc(len * sizeof(kiss_fft_cpx));
 	kiss_fft_cpx *fout = (kiss_fft_cpx *)malloc(len * sizeof(kiss_fft_cpx));
 	if (!fin || !fout) {

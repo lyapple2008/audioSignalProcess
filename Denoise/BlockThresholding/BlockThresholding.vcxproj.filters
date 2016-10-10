@@ -19,16 +19,28 @@
     <Filter Include="kiss_fft">
       <UniqueIdentifier>{1128541e-c458-4ff3-8bd4-871ae6dcb24e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="stft">
+      <UniqueIdentifier>{8634257e-c7f9-4646-96e0-ea8cdda037f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{1dee6e56-6ef3-46d8-baca-778ab12c6c74}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\common\wav_parser\wav_io.c">
       <Filter>wav_parser</Filter>
     </ClCompile>
-    <ClCompile Include="unittest_fft.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\common\kiss_fft\kiss_fft.c">
       <Filter>kiss_fft</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\dsp\stft.c">
+      <Filter>stft</Filter>
+    </ClCompile>
+    <ClCompile Include="src\audioDenoiseBlockTreshold.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="unittest_fft.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -40,6 +52,12 @@
     </ClInclude>
     <ClInclude Include="..\..\common\kiss_fft\kiss_fft.h">
       <Filter>kiss_fft</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\dsp\stft.h">
+      <Filter>stft</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audioDenoiseBlockTreshold.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

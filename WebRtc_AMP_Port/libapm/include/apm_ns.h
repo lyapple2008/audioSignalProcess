@@ -2,9 +2,7 @@
 #define APM_NS_H
 #include <vector>
 // implement noise suppression module
-//#include "webrtc/modules/audio_processing/audio_buffer.h"
 
-//using namespace webrtc;
 typedef struct NsHandleT NsHandle;
 
 enum {

@@ -1,7 +1,4 @@
 #include "../include/apm_ns.h"
-extern "C"{
-#include "highpass_filter.h"
-}
 #include "webrtc/modules/audio_processing/ns/include/noise_suppression.h"
 #include "webrtc/modules/audio_processing/audio_buffer.h"
 
@@ -135,6 +132,9 @@ void APM_NS::processCaptureStream(short* data, int samples_per_channel, int inpu
 }
 
 APM_NS::~APM_NS(){
+	if (init_flag == false)
+		return;
+
 	for (int ch = 0; ch < m_channels; ch++) {
 		WebRtcNs_Free(m_handles[ch]);
 	}

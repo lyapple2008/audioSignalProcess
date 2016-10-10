@@ -5,7 +5,6 @@
 #include "../webrtc/typedefs.h"
 extern "C"{
 #include "../wav_io.h"
-#include "../libapm/src/highpass_filter.h"
 }
 
 
