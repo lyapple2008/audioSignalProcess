@@ -25,10 +25,10 @@ int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
 
 	// Compute hanning window
 	handle->win_size = fs / 1000 * time_win;
-	if (handle->win_size % 2 != 0) {
-		handle->win_size += 1;// even window
+	if (handle->win_size % 2 == 0) {
+		handle->win_size += 1;// odd window
 	}
-	handle->half_win_size = (handle->win_size) / 2;
+	handle->half_win_size = (handle->win_size - 1) / 2;
 	handle->win_hanning = (float *)malloc(sizeof(float) * (handle->win_size));
 	if (!(handle->win_hanning)) {
 		return MARS_ERROR_MEMORY;
