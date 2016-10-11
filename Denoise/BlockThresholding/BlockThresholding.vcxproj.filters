@@ -39,7 +39,7 @@
     <ClCompile Include="src\audioDenoiseBlockTreshold.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="unittest_fft.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

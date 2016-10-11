@@ -83,8 +83,8 @@
     <ClCompile Include="..\..\common\dsp\stft.c" />
     <ClCompile Include="..\..\common\kiss_fft\kiss_fft.c" />
     <ClCompile Include="..\..\common\wav_parser\wav_io.c" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="src\audioDenoiseBlockTreshold.c" />
-    <ClCompile Include="unittest_fft.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\common\dsp\stft.h" />

@@ -137,7 +137,7 @@ static void blockTreshold_STFT(MarsBlockThreshold_t *handle)
 
 static void blockThreshold_core(MarsBlockThreshold_t *handle)
 {
-
+	int32_t 
 }
 
 int32_t blockThreshold_denoise(MarsBlockThreshold_t *handle,
@@ -153,6 +153,11 @@ int32_t blockThreshold_denoise(MarsBlockThreshold_t *handle,
 
 	// do STFT
 	blockThreshold_STFT(handle);
+
+	// block thresholding
+
+	// do inverse STFT
+	blockThreshold_inverse_STFT(handle);
 
 	// one macro block
 	if (handle->have_nblk_time == handle->max_nblk_time) {
