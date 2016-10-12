@@ -39,6 +39,9 @@
     <ClCompile Include="src\audioDenoiseBlockTreshold.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\common\kiss_fft\kiss_fftr.c">
+      <Filter>kiss_fft</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -58,6 +61,9 @@
     </ClInclude>
     <ClInclude Include="src\audioDenoiseBlockTreshold.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\kiss_fft\kiss_fftr.h">
+      <Filter>kiss_fft</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

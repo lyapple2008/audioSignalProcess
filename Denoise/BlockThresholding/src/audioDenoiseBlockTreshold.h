@@ -2,12 +2,13 @@
 #define AUDIO_DENOISE_BLOCK_THRESHOLD_H_
 
 #include <stdint.h>
-#include "../../../common/kiss_fft/kiss_fft.h"
+#include "../../../common/kiss_fft/kiss_fftr.h"
 
 #define MARS_OK				0x00
 #define MARS_ERROR_MEMORY	0x01
 #define MARS_ERROR_PARAMS	0x02
 #define MARS_NEED_MORE_SAMPLES 0x10
+#define MARS_CAN_OUTPUT		0x20
 
 typedef struct MarsBlockThreshold{
 	int32_t win_size;	// window size 
@@ -22,15 +23,19 @@ typedef struct MarsBlockThreshold{
 	int32_t have_nblk_time;
 
 	float sigma_noise;  // assumption the sigma of gaussian white noise
+	float sigma_hanning_noise;
 	float *inbuf;       // internal buffer for keep one window size input samples
-	kiss_fft_cpx *inbuf_win;   
+	float *inbuf_win;   
 	float *outbuf;      // internal buffer for keep one macro block output samples
 	int32_t num_inbuf;  //the number of samples in inbuf
 	int32_t output_ready; // flag for whether output or not
 
 	kiss_fft_cpx **stft_coef;
-	kiss_fft_cfg forward_fft_cfg;
-	kiss_fft_cfg backward_fft_cfg;
+	kiss_fft_cpx **stft_thre;
+	kiss_fft_cpx **stft_coef_block;
+	kiss_fft_cpx **stft_coef_block_norm;
+	kiss_fftr_cfg forward_fftr_cfg;
+	kiss_fftr_cfg backward_fftr_cfg;
 }MarsBlockThreshold_t;
 
 /*
@@ -50,5 +55,8 @@ void blockThreshold_flush(MarsBlockThreshold_t *handle,
 						int16_t *out, int32_t *out_len);
 
 void blockThreshold_free(MarsBlockThreshold_t *handle);
+
+// compute the output lenght of one MarcroBlock
+int32_t blockThreshold_max_output(MarsBlockThreshold_t *handle);
 
 #endif

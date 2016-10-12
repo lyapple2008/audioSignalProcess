@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
 		fout[i].i = 0.0;
 	}
 
+	saveResult(fin, len, "init_file.txt");
 
 	kiss_fft_cfg fft_cfg = kiss_fft_alloc(len, FORWARD_FFT, 0, 0);
 
@@ -41,9 +42,17 @@ int main(int argc, char *argv[])
 	saveResult(fout, len, "kiss_fft_result.txt");
 	fprintf(stdout, "finish!\n");
 
+	// inverse fft
+	fprintf(stdout, "do inverse fft!!!\n");
+	kiss_fft_cfg inv_fft_cfg = kiss_fft_alloc(len, BACKWARD_FFT, 0, 0);
+	kiss_fft(inv_fft_cfg, fout, fin);
+	saveResult(fin, len, "kiss_inv_fft_result.txt");
+	fprintf(stdout, "finish!\n");
+
 	free(fin);
 	free(fout);
 	free(fft_cfg);
+	free(inv_fft_cfg);
 
 	return 0;
 }

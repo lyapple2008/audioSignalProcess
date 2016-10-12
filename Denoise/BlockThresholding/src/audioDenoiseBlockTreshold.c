@@ -7,6 +7,10 @@
 #define BACKWARD_FFT 1
 #define SAFE_FREE(mem) do{if(!mem) free(mem);}while(0);
 
+static const float m_lambda[3][5] = { { 1.5, 1.8, 2, 2.5, 2.5 },
+									  { 1.8, 2, 2.5, 3.5, 3.5 },
+									  { 2, 2.5, 3.5, 4.7, 4.7 } };
+
 static void make_hanning_window(float *win, int32_t win_size)
 {
 	int32_t half_win = (win_size - 1) / 2;
@@ -31,7 +35,7 @@ int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
 	handle->half_win_size = (handle->win_size - 1) / 2;
 	handle->win_hanning = (float *)malloc(sizeof(float) * (handle->win_size));
 	if (!(handle->win_hanning)) {
-		return MARS_ERROR_MEMORY;
+		goto end;
 	}
 	make_hanning_window(handle->win_hanning, handle->win_size);
 
@@ -41,67 +45,108 @@ int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
 	handle->nblk_time = 3;
 	handle->nblk_freq = 5;
 	handle->sigma_noise = 0.047;	
+	handle->sigma_hanning_noise = handle->sigma_noise * sqrt(0.375);
 	handle->macro_size = handle->half_win_size * handle->max_nblk_time;
 	handle->have_nblk_time = 0;
 
 	handle->inbuf = (float *)malloc(sizeof(float) * handle->win_size);
 	if (!(handle->inbuf)) {
-		SAFE_FREE(handle->win_hanning);
-		return MARS_ERROR_MEMORY;
+		goto end;
 	}
 	handle->inbuf_win = (kiss_fft_cpx *)malloc(sizeof(kiss_fft_cpx) * handle->win_size);
 	if (!(handle->inbuf_win)) {
-		SAFE_FREE(handle->win_hanning);
-		SAFE_FREE(handle->inbuf);
-		return MARS_ERROR_MEMORY;
+		goto end;
 	}
 	for (int32_t i = 0; i < handle->win_size; i++) {
-		(handle->inbuf_win)[i].i = 0.0;
-		(handle->inbuf_win)[i].r = 0.0;
+		(handle->inbuf_win)[i] = 0.0;
 	}
 
 	handle->outbuf = (float *)malloc(sizeof(float) * handle->macro_size);
 	if (!(handle->outbuf)) {
-		SAFE_FREE(handle->win_hanning);
-		SAFE_FREE(handle->inbuf);
-		SAFE_FREE(handle->inbuf_win);
-		return MARS_ERROR_MEMORY;
+		goto end;
 	}
 	handle->num_inbuf = 0;
 	handle->output_ready = 0;
 
 	handle->stft_coef = (kiss_fft_cpx **)malloc(sizeof(kiss_fft_cpx *) * (handle->max_nblk_time));
 	if (!(handle->stft_coef)) {
-		SAFE_FREE(handle->win_hanning);
-		SAFE_FREE(handle->inbuf);
-		SAFE_FREE(handle->outbuf);
-		SAFE_FREE(handle->inbuf_win);
-		return MARS_ERROR_MEMORY;
+		goto end;
 	}
-	for (int32_t i = 0; i < handle->max_nblk_freq; i++) {
+	for (int32_t i = 0; i < handle->max_nblk_time; i++) {
 		handle->stft_coef[i] = (kiss_fft_cpx *)malloc(sizeof(kiss_fft_cpx) * (handle->win_size));
-		//to-do: need check malloc result
+		if (!(handle->stft_coef[i])) {
+			goto end;
+		}
+	}
+	handle->stft_thre = (kiss_fft_cpx **)malloc(sizeof(kiss_fft_cpx *) * (handle->max_nblk_time));
+	if (!(handle->stft_thre)) {
+		goto end;
+	}
+	for (int32_t i = 0; i < handle->max_nblk_time; i++) {
+		handle->stft_thre[i] = (kiss_fft_cpx *)malloc(sizeof(kiss_fft_cpx) * (handle->win_size));
+		if (!(handle->stft_thre[i])){
+			goto end;
+		}
+	}
+	handle->stft_coef_block = (kiss_fft_cpx **)malloc(sizeof(kiss_fft_cpx *) * (handle->max_nblk_time));
+	if (!(handle->stft_coef_block)) {
+		goto end;
+	}
+	for (int32_t i = 0; i < handle->max_nblk_time; i++){
+		handle->stft_coef_block[i] = (kiss_fft_cpx *)malloc(sizeof(kiss_fft_cpx) * (handle->max_nblk_freq));
+		if (!(handle->stft_coef_block[i])) {
+			goto end;
+		}
+	}
+	handle->stft_coef_block_norm = (kiss_fft_cpx **)malloc(sizeof(kiss_fft_cpx *) * (handle->max_nblk_time));
+	if (!(handle->stft_coef_block_norm)) {
+		goto end;
+	}
+	for (int32_t i = 0; i < handle->max_nblk_time; i++){
+		handle->stft_coef_block_norm[i] = (kiss_fft_cpx *)malloc(sizeof(kiss_fft_cpx) * (handle->max_nblk_freq));
+		if (!(handle->stft_coef_block_norm[i])) {
+			goto end;
+		}
 	}
 
-	handle->forward_fft_cfg = kiss_fft_alloc(handle->win_size, FORWARD_FFT, 0, 0);
-	if (!(handle->forward_fft_cfg)) {
-		SAFE_FREE(handle->win_hanning);
-		SAFE_FREE(handle->inbuf);
-		SAFE_FREE(handle->outbuf);
-		SAFE_FREE(handle->inbuf_win);
-		return MARS_ERROR_MEMORY;
+	handle->forward_fftr_cfg = kiss_fftr_alloc(handle->win_size, FORWARD_FFT, 0, 0);
+	if (!(handle->forward_fftr_cfg)) {
+		goto end;
 	}
-	handle->backward_fft_cfg = kiss_fft_alloc(handle->win_size, BACKWARD_FFT, 0, 0);
-	if (!(handle->backward_fft_cfg)) {
-		SAFE_FREE(handle->win_hanning);
-		SAFE_FREE(handle->inbuf);
-		SAFE_FREE(handle->outbuf);
-		SAFE_FREE(handle->inbuf_win);
-		SAFE_FREE(handle->forward_fft_cfg);
-		return MARS_ERROR_MEMORY;
+	handle->backward_fftr_cfg = kiss_fftr_alloc(handle->win_size, BACKWARD_FFT, 0, 0);
+	if (!(handle->backward_fftr_cfg)) {
+		goto end;
 	}
 
 	return MARS_OK;
+
+end:
+	SAFE_FREE(handle->win_hanning);
+	SAFE_FREE(handle->inbuf);
+	SAFE_FREE(handle->outbuf);
+	SAFE_FREE(handle->inbuf_win);
+	if (handle->stft_coef) {
+		for (int32_t i = 0; i < handle->max_nblk_time; i++) {
+			SAFE_FREE(handle->stft_coef[i]);
+		}
+		SAFE_FREE(handle->stft_coef);
+	}
+	if (handle->stft_thre) {
+		for (int32_t i = 0; i < handle->max_nblk_time; i++) {
+			SAFE_FREE(handle->stft_thre[i]);
+		}
+		SAFE_FREE(handle->stft_thre);
+	}
+	if (handle->stft_coef_block) {
+		for (int32_t i = 0; i < handle->max_nblk_time; i++) {
+			SAFE_FREE(handle->stft_coef_block[i]);
+		}
+		SAFE_FREE(handle->stft_coef_block);
+	}
+	SAVE_FREE(handle->forward_fftr_cfg);
+	SAVE_FREE(handle->backward_fftr_cfg);
+
+	return MARS_ERROR_MEMORY;
 }
 
 // The conversion functions use the following naming convention:
@@ -122,22 +167,227 @@ static float S16ToFloat(int16_t v) {
 	return v * (v > 0 ? kMaxInt16Inverse : -kMinInt16Inverse);
 }
 
-static void blockTreshold_STFT(MarsBlockThreshold_t *handle)
+static void blockThreshold_STFT(MarsBlockThreshold_t *handle)
 {
 	//filter with window
 	for (int32_t i = 0; i < handle->win_size; i++) {
-		(handle->inbuf_win)[i].r *= (handle->win_hanning)[i];
+		(handle->inbuf_win)[i] = (handle->inbuf)[i] * (handle->win_hanning)[i];
 	}
 
-	kiss_fft(handle->forward_fft_cfg, handle->inbuf_win, 
+	kiss_fftr(handle->forward_fftr_cfg, handle->inbuf_win, 
 			 handle->stft_coef[handle->have_nblk_time]);
 
 	(handle->have_nblk_time)++;
 }
 
+static void blockThreshold_inverse_STFT(MarsBlockThreshold_t *handle)
+{
+	int32_t half_win_size = (handle->win_size - 1) / 2;
+
+	for (int32_t i = 0; i < handle->max_nblk_time; i++) {
+		kiss_fftr(handle->backward_fftr_cfg, handle->inbuf_win, handle->stft_thre[i]);
+		for (int32_t j = 0; j < handle->win_size; j++) {
+			handle->outbuf[half_win_size*i + j] += handle->inbuf_win[j] / (handle->win_size);
+		}
+	}
+}
+
+// calculate the power of STFT in block [row_start:row_end, col_start:col_end]
+static float power_STFT(kiss_fft_cpx **data,
+						int32_t row_start, int32_t row_end,
+						int32_t col_start, int32_t col_end)
+{
+	float sum = 0.0;
+	
+	for (int32_t row = row_start; row <= row_end; row++) {
+		for (int32_t col = col_start; col <= col_end; col++) {
+			sum += pow(data[row][col].r, 2) + pow(data[row][col].i, 2);
+		}
+	}
+
+	return sum;
+}
+
+// calculate the energy of STFT in real dimension
+static float energy_real_STFT(kiss_fft_cpx **data,
+								int32_t row_start, int32_t row_end,
+								int32_t col_start, int32_t col_end)
+{
+	float sum = 0.0;
+	
+	for (int32_t row = row_start; row <= row_end; row++){
+		for (int32_t col = col_start; col <= col_end; col++){
+			sum += pow(data[row][col].r, 2);
+		}
+	}
+
+	return sum;
+}
+
+// implement scalar multiply: dst_matrix = src_matrix * a
+static void scalar_multiply(kiss_fft_cpx **dst_matrix, kiss_fft_cpx **src_matrix,
+							int32_t row_start, int32_t row_end, 
+							int32_t col_start, int32_t col_end,
+							float a)
+{
+	for (int32_t row = row_start; row <= row_end; row++) {
+		for (int32_t col = col_start; col <= col_end; col++) {
+			dst_matrix[row][col].r = src_matrix[row][col].r * a;
+			dst_matrix[row][col].i = src_matrix[row][col].i * a;
+		}
+	}
+}
+
+static void blockThreshold_adaptive_block(MarsBlockThreshold_t *handle,
+										  int32_t ith_half_macroblk_frq,
+										  int32_t *seg_time, int32_t *seg_freq)
+{
+	float SURE_real = 0.0;
+	float min_SURE_real = (handle->max_nblk_time) * (handle->max_nblk_freq);
+	int32_t TT, FF;
+	float norm = 1.0 / ((handle->win_size) * (handle->sigma_hanning_noise) * 0.5 * sqrt(2.0));
+
+	//Get STFT coef macro block
+	for (int32_t index_blk_time = 0; index_blk_time < handle->max_nblk_time; index_blk_time++) {
+		int32_t index_blk_freq = 1 + (ith_half_macroblk_frq - 1)*(handle->max_nblk_freq);
+		for (int32_t i = 0; i < handle->max_nblk_freq; i++) {
+			(handle->stft_coef_block)[index_blk_time][i] = 
+								(handle->stft_coef)[index_blk_time][index_blk_freq + i];
+		}
+	}
+
+	//Compute adaptive block
+	for (int32_t T = 0; T < handle->nblk_time; T++) {//loop over time 
+		TT = (handle->max_nblk_time) * pow(2.0, -T);
+		for (int32_t F = 0; F < handle->nblk_freq; F++) {//loop over frequency
+			FF = (handle->max_nblk_freq) * pow(2.0, -F);
+			SURE_real = 0.0;
+			for (int32_t ii = 0; ii < pow(2.0, T); ii++){
+				for (int32_t jj = 0; jj < pow(2.0, F); jj++) {
+					scalar_multiply(handle->stft_coef_block_norm,
+									handle->stft_coef_block,
+									TT*ii, TT*(ii + 1) - 1,
+									FF*jj, FF*(jj + 1) - 1,
+									norm);
+					SURE_real += energy_real_STFT(handle->stft_coef_block_norm,
+													TT*ii, TT*(ii + 1) - 1,
+													FF*jj, FF*(jj + 1) - 1);
+				}
+			}
+			// update segmentation based on SURE_real
+			if (SURE_real < min_SURE_real) {
+				min_SURE_real = SURE_real;
+				*seg_time = T;
+				*seg_freq = F;
+			}
+		}
+	}
+}
+
+static void blockTreshold_compute_thre(MarsBlockThreshold_t *handle,
+											int32_t ith_half_macro_freq,
+											int32_t seg_time,
+											int32_t seg_freq)
+{
+	int32_t TT = (handle->max_nblk_time) * pow(2.0, -seg_time);
+	int32_t FF = (handle->max_nblk_freq) * pow(2.0, -seg_freq);
+	float a = 0.0;
+	float lambda = m_lambda[seg_time][seg_freq];
+
+	for (int32_t ii = 0; ii < pow(2.0, seg_time); ii++) {
+		for (int32_t jj = 0; jj < pow(2.0, seg_freq); jj++) {
+			a = lambda * TT * FF * pow(handle->sigma_hanning_noise, 2) * (handle->win_size);
+			a = 1.0 - a / power_STFT(handle->stft_coef_block,
+									TT*ii, TT*(ii + 1) - 1,
+									FF*jj, FF*(jj + 1) - 1);
+			if (a < 0) {
+				a = 0;
+			}
+
+			// udpate attenuation map
+			int32_t idx_base = 1 + ith_half_macro_freq * (handle->max_nblk_freq);
+			int32_t idx_row, idx_col;
+			for (int32_t kk = 0; kk < TT; kk++) {
+				for (int32_t ww = 0; ww < FF; ww++) {
+					idx_row = ii * TT + kk;
+					idx_col = jj * FF + ww;
+					(handle->stft_thre)[idx_row][idx_base + idx_col].r = 
+							(handle->stft_coef_block)[idx_row][idx_col].r * a;
+					(handle->stft_thre)[idx_row][idx_base + idx_col].r =
+							(handle->stft_coef_block)[idx_row][idx_base + idx_col].r * a;
+				}
+			}
+ 		}
+	}
+}
+
+// repaire positive frequency by conjugate from negative frequency
+static void blockThreshold_repair_positive_freq(MarsBlockThreshold_t *handle)
+{
+	int32_t fft_size = handle->win_size;
+	int32_t half_num_freq = (fft_size + 1) / 2;
+	for (int32_t i = 0; i < handle->max_nblk_time; i++) {
+		for (int32_t j = 1; j < half_num_freq; j++) {
+			handle->stft_thre[i][fft_size - j].r = handle->stft_thre[i][j].r;
+			handle->stft_thre[i][fft_size - j].i = -(handle->stft_thre[i][j].i);
+		}
+	}
+}
+
+static void blockThreshold_wiener(MarsBlockThreshold_t *handle)
+{
+	float wiener = 1.0;
+	for (int32_t t = 0; t < handle->max_nblk_time; t++){
+		for (int32_t f = 0; f < handle->win_size; f++) {
+			wiener = pow((handle->stft_thre)[t][f].r, 2) + pow((handle->stft_thre)[t][f].i, 2);
+			wiener = wiener / (wiener + (handle->win_size) * pow(handle->sigma_hanning_noise, 2));
+			handle->stft_coef[t][f].r *= wiener;
+			handle->stft_coef[t][f].i *= wiener;
+		}
+	}
+}
+
 static void blockThreshold_core(MarsBlockThreshold_t *handle)
 {
-	int32_t 
+	float L_pi = 8.0;
+	float Lambda_pi = 2.5;
+	float a = 0.0;
+	int32_t half_nb_macroblk_frq = (handle->win_size - 1) / 2 / (handle->max_nblk_freq);
+	int32_t seg_time = 0;
+	int32_t seg_freq = 0;
+	int32_t idx_freq_last = 0;
+
+	// DC part
+	a = 1 - (Lambda_pi*L_pi*pow(handle->sigma_hanning_noise,2)*(handle->win_size)) 
+			/ power_STFT(handle->stft_coef, 0, 0, 0, handle->max_nblk_time);
+	scalar_multiply(handle->stft_thre, handle->stft_coef, 0, 0, 0, handle->max_nblk_time, a);
+
+	// negative frequency part
+	for (int32_t i = 0; i < half_nb_macroblk_frq; i++){
+		//adaptive block
+		blockThreshold_adaptive_block(handle, i, &seg_time, &seg_freq);
+
+		//compute the attenuation map base on adaptive block segmenation
+		blockTreshold_compute_thre(handle, i, seg_time, seg_freq);
+	}
+
+	// for last few frequency that do not match 2D MarcroBlock
+	idx_freq_last = 1 + half_nb_macroblk_frq * (handle->max_nblk_freq) + 1;
+	if (idx_freq_last <= (handle->win_size + 1) / 2){
+		for (int32_t i = idx_freq_last; i < (handle->win_size + 1) / 2; i++) {
+			a = Lambda_pi*L_pi*pow(handle->sigma_hanning_noise, 2)*(handle->win_size);
+			a = 1 - a / power_STFT(handle->stft_coef, 0, handle->max_nblk_time-1, i, i);
+			scalar_multiply(handle->stft_thre, handle->stft_coef,
+							0, handle->max_nblk_time - 1,
+							i, i, a);
+		}
+	}
+
+	// positive frequency part, conjugate from negative frequency
+	blockThreshold_repair_positive_freq(handle);
+
+	// wiener filter
+	blockThreshold_wiener(handle);
 }
 
 int32_t blockThreshold_denoise(MarsBlockThreshold_t *handle,
@@ -148,21 +398,31 @@ int32_t blockThreshold_denoise(MarsBlockThreshold_t *handle,
 	}
 	// Prepare inbuf
 	int32_t half_win_size = handle->half_win_size;
-	memcpy(handle->inbuf, handle->inbuf + half_win_size, sizeof(float) * half_win_size);
-	memcpy(handle->inbuf + half_win_size, in, sizeof(float) * half_win_size);
+	memcpy(handle->inbuf, handle->inbuf + half_win_size, sizeof(float) * (half_win_size + 1));
+	memcpy(handle->inbuf + half_win_size + 1, in, sizeof(float) * half_win_size);
 
 	// do STFT
 	blockThreshold_STFT(handle);
 
+	if (handle->have_nblk_time < handle->max_nblk_time) {
+		return MARS_NEED_MORE_SAMPLES;
+	}
 	// block thresholding
+	blockThreshold_core(handle);
 
 	// do inverse STFT
 	blockThreshold_inverse_STFT(handle);
 
-	// one macro block
-	if (handle->have_nblk_time == handle->max_nblk_time) {
+	return MARS_CAN_OUTPUT;
+}
 
-	}
+void blockThreshold_output(MarsBlockThreshold_t *handle,
+						   int16_t *out, int32_t *out_len)
+{
 
+}
 
+int32_t blockThreshold_max_output(MarsBlockThreshold_t *handle)
+{
+	return handle->macro_size;
 }

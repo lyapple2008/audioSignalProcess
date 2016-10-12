@@ -82,6 +82,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\common\dsp\stft.c" />
     <ClCompile Include="..\..\common\kiss_fft\kiss_fft.c" />
+    <ClCompile Include="..\..\common\kiss_fft\kiss_fftr.c" />
     <ClCompile Include="..\..\common\wav_parser\wav_io.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\audioDenoiseBlockTreshold.c" />
@@ -89,6 +90,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\common\dsp\stft.h" />
     <ClInclude Include="..\..\common\kiss_fft\kiss_fft.h" />
+    <ClInclude Include="..\..\common\kiss_fft\kiss_fftr.h" />
     <ClInclude Include="..\..\common\kiss_fft\_kiss_fft_guts.h" />
     <ClInclude Include="..\..\common\wav_parser\wav_io.h" />
     <ClInclude Include="src\audioDenoiseBlockTreshold.h" />
