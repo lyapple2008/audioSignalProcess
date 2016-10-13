@@ -18,6 +18,7 @@ static void make_hanning_window(float *win, int32_t win_size)
 		win[i] = 0.5 - 0.5*cos(2*M_PI*i/(win_size-1));
 		win[win_size - 1 - i] = win[i];
 	}
+	win[half_win] = 1.0;
 }
 
 int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
@@ -49,24 +50,34 @@ int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
 	handle->macro_size = handle->half_win_size * handle->max_nblk_time;
 	handle->have_nblk_time = 0;
 
+	handle->SURE_matrix = (float **)malloc(sizeof(float *) * (handle->nblk_time));
+	if (!(handle->SURE_matrix)) {
+		goto end;
+	}
+	for (int32_t i = 0; i < handle->nblk_freq; i++) {
+		handle->SURE_matrix[i] = (float *)malloc(sizeof(float) * (handle->nblk_freq));
+		if (!(handle->SURE_matrix[i])) {
+			goto end;
+		}
+	}
+	memset(handle->SURE_matrix, 0, sizeof(float) * (handle->nblk_time) * (handle->nblk_freq));
+
 	handle->inbuf = (float *)malloc(sizeof(float) * handle->win_size);
 	if (!(handle->inbuf)) {
 		goto end;
 	}
-	handle->inbuf_win = (kiss_fft_cpx *)malloc(sizeof(kiss_fft_cpx) * handle->win_size);
+	memset(handle->inbuf, 0, sizeof(float) * (handle->win_size));
+	handle->inbuf_win = (float *)malloc(sizeof(float) * handle->win_size);
 	if (!(handle->inbuf_win)) {
 		goto end;
 	}
-	for (int32_t i = 0; i < handle->win_size; i++) {
-		(handle->inbuf_win)[i] = 0.0;
-	}
+	memset(handle->inbuf_win, 0, sizeof(float) * (handle->win_size));
 
 	handle->outbuf = (float *)malloc(sizeof(float) * handle->macro_size);
 	if (!(handle->outbuf)) {
 		goto end;
 	}
-	handle->num_inbuf = 0;
-	handle->output_ready = 0;
+	memset(handle->outbuf, 0, sizeof(float) * (handle->macro_size));
 
 	handle->stft_coef = (kiss_fft_cpx **)malloc(sizeof(kiss_fft_cpx *) * (handle->max_nblk_time));
 	if (!(handle->stft_coef)) {
@@ -122,6 +133,11 @@ int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
 
 end:
 	SAFE_FREE(handle->win_hanning);
+	if (handle->SURE_matrix) {
+		for (int32_t i = 0; i < handle->nblk_time; i++) {
+			SAFE_FREE(handle->SURE_matrix[i]);
+		}
+	}
 	SAFE_FREE(handle->inbuf);
 	SAFE_FREE(handle->outbuf);
 	SAFE_FREE(handle->inbuf_win);
@@ -143,8 +159,14 @@ end:
 		}
 		SAFE_FREE(handle->stft_coef_block);
 	}
-	SAVE_FREE(handle->forward_fftr_cfg);
-	SAVE_FREE(handle->backward_fftr_cfg);
+	if (handle->stft_coef_block_norm) {
+		for (int32_t i = 0; i < handle->max_nblk_time; i++) {
+			SAFE_FREE(handle->stft_coef_block_norm[i]);
+		}
+		SAFE_FREE(handle->stft_coef_block_norm);
+	}
+	SAFE_FREE(handle->forward_fftr_cfg);
+	SAFE_FREE(handle->backward_fftr_cfg);
 
 	return MARS_ERROR_MEMORY;
 }
@@ -176,8 +198,6 @@ static void blockThreshold_STFT(MarsBlockThreshold_t *handle)
 
 	kiss_fftr(handle->forward_fftr_cfg, handle->inbuf_win, 
 			 handle->stft_coef[handle->have_nblk_time]);
-
-	(handle->have_nblk_time)++;
 }
 
 static void blockThreshold_inverse_STFT(MarsBlockThreshold_t *handle)
@@ -243,16 +263,23 @@ static void blockThreshold_adaptive_block(MarsBlockThreshold_t *handle,
 										  int32_t *seg_time, int32_t *seg_freq)
 {
 	float SURE_real = 0.0;
+	float energy_real = 0.0;
+	float size_blk = 0.0;
 	float min_SURE_real = (handle->max_nblk_time) * (handle->max_nblk_freq);
+	float lambda = 0.0;
 	int32_t TT, FF;
 	float norm = 1.0 / ((handle->win_size) * (handle->sigma_hanning_noise) * 0.5 * sqrt(2.0));
 
-	//Get STFT coef macro block
+	//Get STFT coef macro block and block norm
 	for (int32_t index_blk_time = 0; index_blk_time < handle->max_nblk_time; index_blk_time++) {
-		int32_t index_blk_freq = 1 + (ith_half_macroblk_frq - 1)*(handle->max_nblk_freq);
+		int32_t index_blk_freq = 1 + ith_half_macroblk_frq * (handle->max_nblk_freq);
 		for (int32_t i = 0; i < handle->max_nblk_freq; i++) {
 			(handle->stft_coef_block)[index_blk_time][i] = 
 								(handle->stft_coef)[index_blk_time][index_blk_freq + i];
+			(handle->stft_coef_block_norm)[index_blk_time][i].r =
+								(handle->stft_coef_block)[index_blk_time][i].r * norm;
+			(handle->stft_coef_block_norm)[index_blk_time][i].i =
+								(handle->stft_coef_block)[index_blk_time][i].i * norm;
 		}
 	}
 
@@ -261,24 +288,45 @@ static void blockThreshold_adaptive_block(MarsBlockThreshold_t *handle,
 		TT = (handle->max_nblk_time) * pow(2.0, -T);
 		for (int32_t F = 0; F < handle->nblk_freq; F++) {//loop over frequency
 			FF = (handle->max_nblk_freq) * pow(2.0, -F);
+			lambda = m_lambda[TT][FF];
 			SURE_real = 0.0;
 			for (int32_t ii = 0; ii < pow(2.0, T); ii++){
 				for (int32_t jj = 0; jj < pow(2.0, F); jj++) {
-					scalar_multiply(handle->stft_coef_block_norm,
-									handle->stft_coef_block,
-									TT*ii, TT*(ii + 1) - 1,
-									FF*jj, FF*(jj + 1) - 1,
-									norm);
-					SURE_real += energy_real_STFT(handle->stft_coef_block_norm,
+					//scalar_multiply(handle->stft_coef_block_norm,
+					//				handle->stft_coef_block,
+					//				TT*ii, TT*(ii + 1) - 1,
+					//				FF*jj, FF*(jj + 1) - 1,
+					//				norm);
+					size_blk = TT * FF;
+					energy_real = energy_real_STFT(handle->stft_coef_block_norm,
 													TT*ii, TT*(ii + 1) - 1,
 													FF*jj, FF*(jj + 1) - 1);
+					SURE_real += size_blk + 
+						         (pow(lambda, 2) * pow(size_blk, 2) - 2 * lambda*size_blk*(size_blk - 2))
+									/ energy_real*(energy_real>lambda*size_blk)
+									+ (energy_real - 2 * size_blk)*(energy_real <= lambda*size_blk);
 				}
 			}
 			// update segmentation based on SURE_real
-			if (SURE_real < min_SURE_real) {
-				min_SURE_real = SURE_real;
-				*seg_time = T;
-				*seg_freq = F;
+			//if (SURE_real < min_SURE_real) {
+			//	min_SURE_real = SURE_real;
+			//	*seg_time = T;
+			//	*seg_freq = F;
+			//}
+			handle->SURE_matrix[TT][FF] = SURE_real;
+		}
+	}
+
+	// find mini SURE segmentation
+	min_SURE_real = handle->SURE_matrix[0][0];
+	*seg_time = 0;
+	*seg_freq = 0;
+	for (int32_t i = 0; i < handle->nblk_time; i++) {
+		for (int32_t j = 0; j < handle->nblk_freq; j++) {
+			if (handle->SURE_matrix[i][j] < min_SURE_real) {
+				min_SURE_real = handle->SURE_matrix[i][j];
+				*seg_time = i;
+				*seg_freq = j;
 			}
 		}
 	}
@@ -300,9 +348,7 @@ static void blockTreshold_compute_thre(MarsBlockThreshold_t *handle,
 			a = 1.0 - a / power_STFT(handle->stft_coef_block,
 									TT*ii, TT*(ii + 1) - 1,
 									FF*jj, FF*(jj + 1) - 1);
-			if (a < 0) {
-				a = 0;
-			}
+			a = a * (a > 0);
 
 			// udpate attenuation map
 			int32_t idx_base = 1 + ith_half_macro_freq * (handle->max_nblk_freq);
@@ -359,8 +405,8 @@ static void blockThreshold_core(MarsBlockThreshold_t *handle)
 
 	// DC part
 	a = 1 - (Lambda_pi*L_pi*pow(handle->sigma_hanning_noise,2)*(handle->win_size)) 
-			/ power_STFT(handle->stft_coef, 0, 0, 0, handle->max_nblk_time);
-	scalar_multiply(handle->stft_thre, handle->stft_coef, 0, 0, 0, handle->max_nblk_time, a);
+			/ power_STFT(handle->stft_coef, 0, handle->max_nblk_time, 0, 0);
+	scalar_multiply(handle->stft_thre, handle->stft_coef, 0, handle->max_nblk_time, 0, 0, a);
 
 	// negative frequency part
 	for (int32_t i = 0; i < half_nb_macroblk_frq; i++){
@@ -393,9 +439,10 @@ static void blockThreshold_core(MarsBlockThreshold_t *handle)
 int32_t blockThreshold_denoise(MarsBlockThreshold_t *handle,
 								int32_t *in, int32_t in_len)
 {
-	if (in_len != handle->half_win_size) {
+	if ((in_len != handle->half_win_size) || (!in)) {
 		return MARS_ERROR_PARAMS;
 	}
+
 	// Prepare inbuf
 	int32_t half_win_size = handle->half_win_size;
 	memcpy(handle->inbuf, handle->inbuf + half_win_size, sizeof(float) * (half_win_size + 1));
@@ -404,7 +451,9 @@ int32_t blockThreshold_denoise(MarsBlockThreshold_t *handle,
 	// do STFT
 	blockThreshold_STFT(handle);
 
-	if (handle->have_nblk_time < handle->max_nblk_time) {
+	(handle->have_nblk_time)++;
+
+	if (handle->have_nblk_time != handle->max_nblk_time) {
 		return MARS_NEED_MORE_SAMPLES;
 	}
 	// block thresholding
@@ -412,17 +461,32 @@ int32_t blockThreshold_denoise(MarsBlockThreshold_t *handle,
 
 	// do inverse STFT
 	blockThreshold_inverse_STFT(handle);
+	
+	handle->have_nblk_time = 0;
 
 	return MARS_CAN_OUTPUT;
 }
 
-void blockThreshold_output(MarsBlockThreshold_t *handle,
-						   int16_t *out, int32_t *out_len)
+int32_t blockThreshold_output(MarsBlockThreshold_t *handle,
+						   int16_t *out, int32_t out_len)
 {
+	if (out_len < handle->macro_size) {
+		return 0;
+	}
 
+	for (int32_t i = 0; i < handle->macro_size; i++) {
+		out[i] = FloatToS16((handle->outbuf)[i]);
+	}
+
+	return handle->macro_size;
 }
 
-int32_t blockThreshold_max_output(MarsBlockThreshold_t *handle)
+int32_t blockThreshold_max_output(const MarsBlockThreshold_t *handle)
 {
 	return handle->macro_size;
+}
+
+int32_t blockThreshold_samples_per_time(const MarsBlockThreshold_t *handle)
+{
+	return handle->half_win_size;
 }

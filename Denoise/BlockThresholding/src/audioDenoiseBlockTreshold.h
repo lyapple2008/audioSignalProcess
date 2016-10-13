@@ -11,7 +11,7 @@
 #define MARS_CAN_OUTPUT		0x20
 
 typedef struct MarsBlockThreshold{
-	int32_t win_size;	// window size 
+	int32_t win_size;	// window size--odd window
 	int32_t half_win_size; // half window size
 	float *win_hanning; // hanning window
 
@@ -21,14 +21,13 @@ typedef struct MarsBlockThreshold{
 	int32_t nblk_freq;  // the number of block in frequency dimension
 	int32_t macro_size; // the number of sample in one macro block
 	int32_t have_nblk_time;
+	float **SURE_matrix;
 
 	float sigma_noise;  // assumption the sigma of gaussian white noise
 	float sigma_hanning_noise;
 	float *inbuf;       // internal buffer for keep one window size input samples
 	float *inbuf_win;   
 	float *outbuf;      // internal buffer for keep one macro block output samples
-	int32_t num_inbuf;  //the number of samples in inbuf
-	int32_t output_ready; // flag for whether output or not
 
 	kiss_fft_cpx **stft_coef;
 	kiss_fft_cpx **stft_thre;
@@ -48,8 +47,13 @@ int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
 int32_t blockThreshold_denoise(MarsBlockThreshold_t *handle,
 							    int16_t *in, int32_t in_len);
 
-void blockThreshold_output(MarsBlockThreshold_t *handle,
-							int16_t *out, int32_t *out_len);
+/*
+ * out[in]: output buffer
+ * out_len[in]: the length of the output buffer
+ * return: the numbers of output samples(int16_t)
+ */
+int32_t blockThreshold_output(MarsBlockThreshold_t *handle,
+							int16_t *out, int32_t out_len);
 
 void blockThreshold_flush(MarsBlockThreshold_t *handle, 
 						int16_t *out, int32_t *out_len);
@@ -57,6 +61,8 @@ void blockThreshold_flush(MarsBlockThreshold_t *handle,
 void blockThreshold_free(MarsBlockThreshold_t *handle);
 
 // compute the output lenght of one MarcroBlock
-int32_t blockThreshold_max_output(MarsBlockThreshold_t *handle);
+int32_t blockThreshold_max_output(const MarsBlockThreshold_t *handle);
+
+int32_t blockThreshold_samples_per_time(const MarsBlockThreshold_t *handle);
 
 #endif
