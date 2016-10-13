@@ -83,8 +83,9 @@ int main(int argc, char *argv[])
 			return -1;
 		}
 
-		ret = blockThreshold_denoise(&denoise_handle, inbuf, frame_size);
 		fprintf(stdout, "Frame: %d\n", frm_cnt++);
+		ret = blockThreshold_denoise(&denoise_handle, inbuf, frame_size);
+		
 		if (ret == MARS_ERROR_PARAMS) {
 			fprintf(stderr, "ret = MARS_ERROR_PARAMS\n");
 			break;

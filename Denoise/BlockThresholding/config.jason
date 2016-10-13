@@ -1,5 +1,5 @@
 {
-	"infile":"C:\\MarshallPolyvWorkspace\\NoiseReduction\\test_corpus\\10dB\\sp26_restaurant_sn10.wav",
-	"outfile":"sp26_restaurant_sn10_denoise.wav",
-	"frame_ms":10
+	"infile":"moz1_5dBnoisy.wav",
+	"outfile":"moz1_5dBnoisy_denoise.wav",
+	"frame_ms":50
 }
