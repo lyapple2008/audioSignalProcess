@@ -101,6 +101,7 @@ int main(int argc, char *argv[])
 	free(inbuf);
 	fclose(pInFile);
 	fclose(pOutFile);
+	blockThreshold_free(&denoise_handle);
 
 	return 0;
 }
