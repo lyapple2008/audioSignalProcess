@@ -238,7 +238,7 @@ static int16_t FloatToS16(float v) {
 		return v >= 1 ? (INT16_MAX) :
 		(int16_t)(v * (INT16_MAX) + 0.5f);
 	return v <= -1 ? (INT16_MIN) : 
-		(int16_t)(v * (INT16_MIN) - 0.5);
+		(int16_t)(-v * (INT16_MIN) - 0.5);
 }
 
 static float S16ToFloat(int16_t v) {
