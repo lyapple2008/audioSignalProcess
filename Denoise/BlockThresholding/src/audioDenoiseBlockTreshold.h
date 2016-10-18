@@ -4,37 +4,37 @@
 #include <stdint.h>
 #include "../../../common/kiss_fft/kiss_fftr.h"
 
-#define MARS_OK				0x00
-#define MARS_ERROR_MEMORY	0x01
-#define MARS_ERROR_PARAMS	0x02
-#define MARS_NEED_MORE_SAMPLES 0x10
-#define MARS_CAN_OUTPUT		0x20
+#define MARS_OK                 0x00
+#define MARS_ERROR_MEMORY       0x01
+#define MARS_ERROR_PARAMS       0x02
+#define MARS_NEED_MORE_SAMPLES  0x10
+#define MARS_CAN_OUTPUT         0x20
 
 typedef struct MarsBlockThreshold{
-	int32_t win_size;	// window size--odd window
-	int32_t half_win_size; // half window size
-	float *win_hanning; // hanning window
+    int32_t win_size;    // window size--odd window
+    int32_t half_win_size; // half window size
+    float *win_hanning; // hanning window
 
-	int32_t max_nblk_time;
-	int32_t max_nblk_freq;
-	int32_t nblk_time;  // the number of block in time dimension
-	int32_t nblk_freq;  // the number of block in frequency dimension
-	int32_t macro_size; // the number of sample in one macro block
-	int32_t have_nblk_time;
-	float **SURE_matrix;
+    int32_t max_nblk_time;
+    int32_t max_nblk_freq;
+    int32_t nblk_time;  // the number of block in time dimension
+    int32_t nblk_freq;  // the number of block in frequency dimension
+    int32_t macro_size; // the number of sample in one macro block
+    int32_t have_nblk_time;
+    float **SURE_matrix;
 
-	float sigma_noise;  // assumption the sigma of gaussian white noise
-	float sigma_hanning_noise;
-	float *inbuf;       // internal buffer for keep one window size input samples
-	float *inbuf_win;   
-	float *outbuf;      // internal buffer for keep one macro block output samples
+    float sigma_noise;  // assumption the sigma of gaussian white noise
+    float sigma_hanning_noise;
+    float *inbuf;       // internal buffer for keep one window size input samples
+    float *inbuf_win;   
+    float *outbuf;      // internal buffer for keep one macro block output samples
 
-	kiss_fft_cpx **stft_coef;
-	kiss_fft_cpx **stft_thre;
-	kiss_fft_cpx **stft_coef_block;
-	kiss_fft_cpx **stft_coef_block_norm;
-	kiss_fftr_cfg forward_fftr_cfg;
-	kiss_fftr_cfg backward_fftr_cfg;
+    kiss_fft_cpx **stft_coef;
+    kiss_fft_cpx **stft_thre;
+    kiss_fft_cpx **stft_coef_block;
+    kiss_fft_cpx **stft_coef_block_norm;
+    kiss_fftr_cfg forward_fftr_cfg;
+    kiss_fftr_cfg backward_fftr_cfg;
 }MarsBlockThreshold_t;
 
 /*
@@ -42,10 +42,10 @@ typedef struct MarsBlockThreshold{
  * fs: sample rate
  */
 int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
-							int32_t time_win, int32_t fs);
+                            int32_t time_win, int32_t fs);
 
 int32_t blockThreshold_denoise(MarsBlockThreshold_t *handle,
-							    int16_t *in, int32_t in_len);
+                                int16_t *in, int32_t in_len);
 
 /*
  * out[in]: output buffer
@@ -53,10 +53,10 @@ int32_t blockThreshold_denoise(MarsBlockThreshold_t *handle,
  * return: the numbers of output samples(int16_t)
  */
 int32_t blockThreshold_output(MarsBlockThreshold_t *handle,
-							int16_t *out, int32_t out_len);
+                            int16_t *out, int32_t out_len);
 
 void blockThreshold_flush(MarsBlockThreshold_t *handle, 
-						int16_t *out, int32_t *out_len);
+                        int16_t *out, int32_t *out_len);
 
 void blockThreshold_free(MarsBlockThreshold_t *handle);
 

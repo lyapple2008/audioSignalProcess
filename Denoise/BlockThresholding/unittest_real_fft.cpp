@@ -21,13 +21,15 @@ int main(int argc, char *argv[])
 {
 	int32_t len = 552;
 	kiss_fft_scalar *fin = (kiss_fft_scalar *)malloc(len * sizeof(kiss_fft_scalar));
-	kiss_fft_cpx *fout = (kiss_fft_cpx *)malloc(len * sizeof(kiss_fft_cpx));
+	kiss_fft_cpx *fout = (kiss_fft_cpx *)malloc((len/2+1) * sizeof(kiss_fft_cpx));
 	if (!fin || !fout) {
 		fprintf(stderr, "error: malloc");
 		return -1;
 	}
 	for (int32_t i = 0; i < len; i++) {
 		fin[i] = sin(i*1.0);
+	}
+	for (int32_t i = 0; i < (len / 2 + 1); i++) {
 		fout[i].r = 0.0;
 		fout[i].i = 0.0;
 	}
