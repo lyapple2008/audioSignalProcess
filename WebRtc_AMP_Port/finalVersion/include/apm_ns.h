@@ -1,10 +1,8 @@
 #ifndef APM_NS_H
 #define APM_NS_H
-
+#include <vector>
 // implement noise suppression module
-//#include "webrtc/modules/audio_processing/audio_buffer.h"
 
-//using namespace webrtc;
 typedef struct NsHandleT NsHandle;
 
 enum {
@@ -15,10 +13,8 @@ enum {
 
 class APM_NS{
 public:
-	APM_NS():ns_handle(0),
-			 capture_buffer(0),
+	APM_NS():capture_buffer(0),
 			 channels_ptr_i(0),
-			 channels_ptr_f(0),
 			 init_flag(false){};
 	~APM_NS();
 	/*
@@ -46,12 +42,10 @@ public:
 	*/
 	void processCaptureStream(float* data, int samples_per_channel, int input_channels);
 	void processCaptureStream(short* data, int samples_per_channel, int input_channels);
-	
 private:
-	NsHandle *ns_handle;
+	std::vector<NsHandle *> m_handles;
 	void *capture_buffer;
 	short **channels_ptr_i;
-	float **channels_ptr_f;
 	unsigned int m_frequency;
 	int m_channels;
 	int m_ns_mode;

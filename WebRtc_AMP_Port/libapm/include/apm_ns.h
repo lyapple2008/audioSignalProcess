@@ -42,7 +42,6 @@ public:
 	*/
 	void processCaptureStream(float* data, int samples_per_channel, int input_channels);
 	void processCaptureStream(short* data, int samples_per_channel, int input_channels);
-	
 private:
 	std::vector<NsHandle *> m_handles;
 	void *capture_buffer;
