@@ -1,5 +1,5 @@
 {
-	"infile":"C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\obs_capture.wav",
-	"outfile":"C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\obs_capture_denoise.wav",
-	"frame_ms":50
+	"infile":"C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\windows_capture_16k.wav",
+	"outfile":"C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\windows_capture_16k_denoise.wav",
+	"frame_ms":20
 }

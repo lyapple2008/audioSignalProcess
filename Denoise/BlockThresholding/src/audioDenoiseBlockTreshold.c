@@ -6,6 +6,7 @@
 #define FORWARD_FFT 0
 #define BACKWARD_FFT 1
 #define SAFE_FREE(mem) do{if(!mem) free(mem);}while(0);
+#define POW2(x) ((x)*(x))
 
 static const float m_lambda[3][5] = { { 1.5, 1.8, 2, 2.5, 2.5 },
                                       { 1.8, 2, 2.5, 3.5, 3.5 },
@@ -301,7 +302,10 @@ static float power_STFT(kiss_fft_cpx **data,
     
     for (int32_t row = row_start; row <= row_end; row++) {
         for (int32_t col = col_start; col <= col_end; col++) {
-            sum += pow(data[row][col].r, 2) + pow(data[row][col].i, 2);
+            //sum += pow(data[row][col].r, 2) + pow(data[row][col].i, 2);
+            kiss_fft_scalar r = data[row][col].r;
+            kiss_fft_scalar i = data[row][col].i;
+            sum += POW2(r) + POW2(i);
         }
     }
 
@@ -320,7 +324,7 @@ static float energy_real_STFT(kiss_fft_cpx **data,
             //sum += pow(data[row][col].r, 2);
             //sum += data[row][col].r * data[row][col].r;
             r = data[row][col].r;
-            sum += r * r;
+            sum += POW2(r);
         }
     }
 
@@ -377,7 +381,8 @@ static void blockThreshold_adaptive_block(MarsBlockThreshold_t *handle,
             lambda = m_lambda[T][F];
             SURE_real = 0.0;
             size_blk = TT * FF;
-            temp = pow(lambda, 2) * pow(size_blk, 2) - 2 * lambda*size_blk*(size_blk - 2);
+            //temp = pow(lambda, 2) * pow(size_blk, 2) - 2 * lambda*size_blk*(size_blk - 2);
+            temp = POW2(lambda) * POW2(size_blk) - 2 * lambda*size_blk*(size_blk - 2);
             for (int32_t ii = 0; ii < pow(2.0, T); ii++){
                 for (int32_t jj = 0; jj < pow(2.0, F); jj++) {
                     energy_real = energy_real_STFT(handle->stft_coef_block_norm,
@@ -461,8 +466,13 @@ static void blockThreshold_wiener(MarsBlockThreshold_t *handle)
 
     for (int32_t t = 0; t < handle->max_nblk_time; t++){
         for (int32_t f = 0; f < (handle->win_size+1)/2; f++) {
-            wiener = pow((handle->stft_thre)[t][f].r, 2) + pow((handle->stft_thre)[t][f].i, 2);
-            wiener = wiener / (wiener + (handle->win_size) * pow(handle->sigma_hanning_noise, 2));
+            //wiener = pow((handle->stft_thre)[t][f].r, 2) + pow((handle->stft_thre)[t][f].i, 2);
+            kiss_fft_scalar r = (handle->stft_thre)[t][f].r;
+            kiss_fft_scalar i = (handle->stft_thre)[t][f].i;
+            kiss_fft_scalar sigma = handle->sigma_hanning_noise;
+            wiener = POW2(r) + POW2(i);
+            //wiener = wiener / (wiener + (handle->win_size) * pow(handle->sigma_hanning_noise, 2));
+            wiener = wiener / (wiener + (handle->win_size) * POW2(sigma));
             handle->stft_coef[t][f].r *= wiener;
             handle->stft_coef[t][f].i *= wiener;
         }
@@ -480,8 +490,10 @@ static void blockThreshold_core(MarsBlockThreshold_t *handle)
     int32_t idx_freq_last = 0;
 
     // DC part
-    a = 1 - (Lambda_pi*L_pi*pow(handle->sigma_hanning_noise,2)*(handle->win_size)) 
-            / power_STFT(handle->stft_coef, 0, handle->max_nblk_time-1, 0, 0);
+    //a = 1 - (Lambda_pi*L_pi*pow(handle->sigma_hanning_noise,2)*(handle->win_size)) 
+    //        / power_STFT(handle->stft_coef, 0, handle->max_nblk_time-1, 0, 0);
+    a = 1 - (Lambda_pi*L_pi*POW2(handle->sigma_hanning_noise)*(handle->win_size))
+              / power_STFT(handle->stft_coef, 0, handle->max_nblk_time - 1, 0, 0);
     if (a < 0) {
         a = 0;
     }
@@ -492,7 +504,7 @@ static void blockThreshold_core(MarsBlockThreshold_t *handle)
         //adaptive block
         blockThreshold_adaptive_block(handle, i, &seg_time, &seg_freq);
 
-        //compute the attenuation map base on adaptive block segmenation
+        //compute the attenuation map base on adaptive block segmentation
         blockTreshold_compute_thre(handle, i, seg_time, seg_freq);
     }
 
@@ -526,7 +538,7 @@ int32_t blockThreshold_denoise_float(MarsBlockThreshold_t *handle,
         return MARS_ERROR_PARAMS;
     }
 
-    // Prepare inbuf
+    // update inbuf
     int32_t half_win_size = handle->half_win_size;
     memcpy(handle->inbuf, handle->inbuf + half_win_size, sizeof(float) * half_win_size);
     memcpy(handle->inbuf + half_win_size, in, sizeof(float) * half_win_size);
