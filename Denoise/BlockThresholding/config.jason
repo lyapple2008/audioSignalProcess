@@ -1,5 +1,5 @@
 {
-	"infile":"moz1_5dBnoisy.wav",
-	"outfile":"moz1_5dBnoisy_denoise.wav",
+	"infile":"C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\obs_capture.wav",
+	"outfile":"C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\obs_capture_denoise.wav",
 	"frame_ms":50
 }

@@ -131,11 +131,11 @@ int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
     }
     memset(handle->inbuf_win, 0, sizeof(float) * (handle->win_size));
 
-    handle->outbuf = (float *)malloc(sizeof(float) * handle->macro_size);
+    handle->outbuf = (float *)malloc(sizeof(float) * (handle->macro_size+handle->half_win_size));
     if (!(handle->outbuf)) {
         goto end;
     }
-    memset(handle->outbuf, 0, sizeof(float) * (handle->macro_size));
+    memset(handle->outbuf, 0, sizeof(float) * (handle->macro_size+handle->half_win_size));
 
     handle->stft_coef = (kiss_fft_cpx **)malloc(sizeof(kiss_fft_cpx *) * (handle->max_nblk_time));
     if (!(handle->stft_coef)) {
@@ -229,6 +229,22 @@ end:
     return MARS_ERROR_MEMORY;
 }
 
+int32_t blockThreshold_reset(MarsBlockThreshold_t *handle)
+{
+    if (!handle) {
+        return MARS_ERROR_PARAMS;
+    }
+
+    handle->have_nblk_time = 0;
+    for (int32_t i = 0; i < handle->nblk_time; i++) {
+        memset(handle->SURE_matrix[i], 0, sizeof(float) * (handle->nblk_freq));
+    }
+    memset(handle->inbuf, 0, sizeof(float) * (handle->win_size));
+    memset(handle->outbuf, 0, sizeof(float) * (handle->macro_size + handle->half_win_size));
+
+    return MARS_OK;
+}
+
 // The conversion functions use the following naming convention:
 // S16:      int16_t [-32768, 32767]
 // Float:    float   [-1.0, 1.0]
@@ -263,10 +279,10 @@ static void blockThreshold_inverse_STFT(MarsBlockThreshold_t *handle)
     int32_t half_win_size = handle->half_win_size;
 
     memcpy(handle->outbuf, 
-           handle->outbuf + handle->macro_size - half_win_size, 
+           handle->outbuf + handle->macro_size, 
            sizeof(float)*half_win_size);
     memset(handle->outbuf+half_win_size, 0, 
-           sizeof(float) * (handle->macro_size-half_win_size));
+           sizeof(float) * (handle->macro_size));
 
     for (int32_t i = 0; i < handle->max_nblk_time; i++) {
         kiss_fftri(handle->backward_fftr_cfg, handle->stft_coef[i], handle->inbuf_win);
@@ -298,10 +314,13 @@ static float energy_real_STFT(kiss_fft_cpx **data,
                                 int32_t col_start, int32_t col_end)
 {
     float sum = 0.0;
-    
+    float r = 0.0;
     for (int32_t row = row_start; row <= row_end; row++){
         for (int32_t col = col_start; col <= col_end; col++){
-            sum += pow(data[row][col].r, 2);
+            //sum += pow(data[row][col].r, 2);
+            //sum += data[row][col].r * data[row][col].r;
+            r = data[row][col].r;
+            sum += r * r;
         }
     }
 
@@ -479,8 +498,8 @@ static void blockThreshold_core(MarsBlockThreshold_t *handle)
 
     // for last few frequency that do not match 2D MarcroBlock
     idx_freq_last = 1 + half_nb_macroblk_frq * (handle->max_nblk_freq);
-    if (idx_freq_last <= (handle->win_size + 1) / 2){
-        for (int32_t i = idx_freq_last; i < (handle->win_size + 1) / 2; i++) {
+    if (idx_freq_last < (handle->win_size / 2 + 1)){
+        for (int32_t i = idx_freq_last; i < (handle->win_size / 2 + 1); i++) {
             a = Lambda_pi*L_pi*pow(handle->sigma_hanning_noise, 2)*(handle->win_size);
             a = 1 - a / power_STFT(handle->stft_coef, 0, handle->max_nblk_time-1, i, i);
             if (a < 0) {
@@ -500,10 +519,8 @@ static void blockThreshold_core(MarsBlockThreshold_t *handle)
     blockThreshold_wiener(handle);
 }
 
-
-
-int32_t blockThreshold_denoise(MarsBlockThreshold_t *handle,
-                                int16_t *in, int32_t in_len)
+int32_t blockThreshold_denoise_float(MarsBlockThreshold_t *handle,
+                                     float *in, int32_t in_len)
 {
     if ((in_len != handle->half_win_size) || (!in)) {
         return MARS_ERROR_PARAMS;
@@ -512,9 +529,7 @@ int32_t blockThreshold_denoise(MarsBlockThreshold_t *handle,
     // Prepare inbuf
     int32_t half_win_size = handle->half_win_size;
     memcpy(handle->inbuf, handle->inbuf + half_win_size, sizeof(float) * half_win_size);
-    for (int32_t i = 0; i < half_win_size; i++) {
-        handle->inbuf[half_win_size + i] = S16ToFloat(in[i]);
-    }
+    memcpy(handle->inbuf + half_win_size, in, sizeof(float) * half_win_size);
 
     // do STFT
     blockThreshold_STFT(handle);
@@ -534,14 +549,41 @@ int32_t blockThreshold_denoise(MarsBlockThreshold_t *handle,
 
     // do inverse STFT
     blockThreshold_inverse_STFT(handle);
-    
+
     handle->have_nblk_time = 0;
 
     return MARS_CAN_OUTPUT;
 }
 
-int32_t blockThreshold_output(MarsBlockThreshold_t *handle,
-                           int16_t *out, int32_t out_len)
+int32_t blockThreshold_denoise_int16(MarsBlockThreshold_t *handle,
+                                int16_t *in, int32_t in_len)
+{
+    if ((in_len != handle->half_win_size) || (!in)) {
+        return MARS_ERROR_PARAMS;
+    }
+
+    int32_t half_win_size = handle->half_win_size;
+    for (int32_t i = 0; i < half_win_size; i++) {
+        handle->inbuf_win[i] = S16ToFloat(in[i]);
+    }
+
+    return blockThreshold_denoise_float(handle, handle->inbuf_win, in_len);
+}
+
+int32_t blockThreshold_output_float(MarsBlockThreshold_t *handle,
+                                    float *out, int32_t out_len)
+{
+    if (out_len < handle->macro_size) {
+        return 0;
+    }
+
+    memcpy(out, handle->outbuf, handle->macro_size * sizeof(float));
+
+    return handle->macro_size;
+}
+
+int32_t blockThreshold_output_int16(MarsBlockThreshold_t *handle,
+                            int16_t *out, int32_t out_len)
 {
     if (out_len < handle->macro_size) {
         return 0;
@@ -552,6 +594,64 @@ int32_t blockThreshold_output(MarsBlockThreshold_t *handle,
     }
 
     return handle->macro_size;
+}
+
+int32_t blockThreshold_flush_int16(MarsBlockThreshold_t *handle,
+                            int16_t *out, int32_t out_len)
+{
+    int32_t half_win_size = handle->half_win_size;
+    int32_t out_size = (handle->have_nblk_time) * half_win_size;
+
+    if (out_len < out_size) {
+        return -1;
+    }
+
+    memcpy(handle->outbuf,
+        handle->outbuf + handle->macro_size,
+        sizeof(float)*half_win_size);
+    memset(handle->outbuf + half_win_size, 0,
+        sizeof(float) * (handle->macro_size));
+
+    for (int32_t i = 0; i < handle->have_nblk_time; i++) {
+        kiss_fftri(handle->backward_fftr_cfg, handle->stft_coef[i], handle->inbuf_win);
+        for (int32_t j = 0; j < handle->win_size; j++) {
+            handle->outbuf[half_win_size*i + j] += handle->inbuf_win[j] / (handle->win_size);
+        }
+    }
+
+    for (int32_t i = 0; i < out_size; i++) {
+        out[i] = FloatToS16(handle->outbuf[i]);
+    }
+
+    return out_size;
+}
+
+int32_t blockThreshold_flush_float(MarsBlockThreshold_t *handle,
+                                    int16_t *out, int32_t out_len)
+{
+    int32_t half_win_size = handle->half_win_size;
+    int32_t out_size = (handle->have_nblk_time) * half_win_size;
+
+    if (out_len < out_size) {
+        return -1;
+    }
+
+    memcpy(handle->outbuf,
+            handle->outbuf + handle->macro_size,
+            sizeof(float)*half_win_size);
+    memset(handle->outbuf + half_win_size, 0,
+            sizeof(float) * (handle->macro_size));
+
+    for (int32_t i = 0; i < handle->have_nblk_time; i++) {
+        kiss_fftri(handle->backward_fftr_cfg, handle->stft_coef[i], handle->inbuf_win);
+        for (int32_t j = 0; j < handle->win_size; j++) {
+            handle->outbuf[half_win_size*i + j] += handle->inbuf_win[j] / (handle->win_size);
+        }
+    }
+
+    memcpy(out, handle->outbuf, out_size * sizeof(float));
+
+    return out_size;
 }
 
 void blockThreshold_free(MarsBlockThreshold_t *handle)

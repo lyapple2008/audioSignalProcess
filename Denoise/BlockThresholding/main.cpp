@@ -9,7 +9,7 @@ extern "C"{
 int main(int argc, char *argv[])
 {
     //-------------Parse config
-    const char *config_file = "config.jason";
+    const char *config_file = "C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\config.jason";
     json_t *config;
     json_error_t error;
 
@@ -79,20 +79,28 @@ int main(int argc, char *argv[])
     while (num_samples > frame_size) {
         readed = fread(inbuf, sizeof(int16_t), frame_size, pInFile);
         if (readed != frame_size) {
-            fprintf(stderr, "Error in read file!!!\n");
-            return -1;
+            fprintf(stdout, "end of file, flush sample in internal buffer!!!\n");
+            int32_t out_size = blockThreshold_flush_int16(&denoise_handle, outbuf, outbuf_len);
+            if (out_size > 0) {
+                fwrite(outbuf, sizeof(int16_t), out_size, pOutFile);
+            }
+            fwrite(inbuf, sizeof(int16_t), readed, pOutFile);
+            break;
         }
 
         fprintf(stdout, "Frame: %d\n", frm_cnt++);
-        ret = blockThreshold_denoise(&denoise_handle, inbuf, frame_size);
-        
+        ret = blockThreshold_denoise_int16(&denoise_handle, inbuf, frame_size);
+        //if (frm_cnt == 100) {
+        //    fprintf(stdout, "reset\n");
+        //    blockThreshold_reset(&denoise_handle);
+        //}
         if (ret == MARS_ERROR_PARAMS) {
             fprintf(stderr, "ret = MARS_ERROR_PARAMS\n");
             break;
         } else if (ret == MARS_NEED_MORE_SAMPLES) {
             continue;
         } else if (ret == MARS_CAN_OUTPUT) {
-            int32_t len = blockThreshold_output(&denoise_handle, outbuf, outbuf_len);
+            int32_t len = blockThreshold_output_int16(&denoise_handle, outbuf, outbuf_len);
             fwrite(outbuf, sizeof(int16_t), len, pOutFile);
             fprintf(stdout, "one macro block processed!!\n");
         }

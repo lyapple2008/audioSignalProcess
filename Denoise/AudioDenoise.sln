@@ -5,6 +5,13 @@ VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BlockThresholding", "BlockThresholding\BlockThresholding.vcxproj", "{B609BD85-8119-49A0-BB31-276F26875550}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BlockThresholding_GenLib", "BlockThresholding_GenLib\BlockThresholding_GenLib.vcxproj", "{C3457D96-9206-47A1-BC20-D75C32A88BAE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D1C2D841-ABB7-463E-ACD4-82A51FB9C2A1}"
+	ProjectSection(SolutionItems) = preProject
+		Performance1.psess = Performance1.psess
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -15,8 +22,15 @@ Global
 		{B609BD85-8119-49A0-BB31-276F26875550}.Debug|Win32.Build.0 = Debug|Win32
 		{B609BD85-8119-49A0-BB31-276F26875550}.Release|Win32.ActiveCfg = Release|Win32
 		{B609BD85-8119-49A0-BB31-276F26875550}.Release|Win32.Build.0 = Release|Win32
+		{C3457D96-9206-47A1-BC20-D75C32A88BAE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C3457D96-9206-47A1-BC20-D75C32A88BAE}.Debug|Win32.Build.0 = Debug|Win32
+		{C3457D96-9206-47A1-BC20-D75C32A88BAE}.Release|Win32.ActiveCfg = Release|Win32
+		{C3457D96-9206-47A1-BC20-D75C32A88BAE}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal
