@@ -59,15 +59,16 @@ int main(int argc, char *argv[])
     int32_t channels = wavHeader.format.channels;
     int32_t bitsPerSample = wavHeader.format.bits_per_sample;
     int32_t num_samples = wavHeader.data.size / channels / bitsPerSample / 8;
-    MarsBlockThreshold_t denoise_handle;
-    ret = blockThreshold_init(&denoise_handle, time_win, freq);
+    MarsBlockThreshold_t *denoise_handle;
+    //ret = blockThreshold_init(&denoise_handle, time_win, freq);
+    denoise_handle = blockThreshold_init(time_win, freq, &ret);
     if (ret != MARS_OK) {
         fprintf(stderr, "error: blockThreshold_init\n");
         return -1;
     }
-    int32_t frame_size = blockThreshold_samples_per_time(&denoise_handle);
+    int32_t frame_size = blockThreshold_samples_per_time(denoise_handle);
     int16_t *inbuf = (int16_t *)malloc(sizeof(int16_t) * frame_size);
-    int32_t outbuf_len = blockThreshold_max_output(&denoise_handle);
+    int32_t outbuf_len = blockThreshold_max_output(denoise_handle);
     int16_t *outbuf = (int16_t *)malloc(sizeof(int16_t) * outbuf_len);
     if (!inbuf || !outbuf) {
         fprintf(stderr, "Error in malloc!!!\n");
@@ -80,7 +81,7 @@ int main(int argc, char *argv[])
         readed = fread(inbuf, sizeof(int16_t), frame_size, pInFile);
         if (readed != frame_size) {
             fprintf(stdout, "end of file, flush sample in internal buffer!!!\n");
-            int32_t out_size = blockThreshold_flush_int16(&denoise_handle, outbuf, outbuf_len);
+            int32_t out_size = blockThreshold_flush_int16(denoise_handle, outbuf, outbuf_len);
             if (out_size > 0) {
                 fwrite(outbuf, sizeof(int16_t), out_size, pOutFile);
             }
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
         }
 
         fprintf(stdout, "Frame: %d\n", frm_cnt++);
-        ret = blockThreshold_denoise_int16(&denoise_handle, inbuf, frame_size);
+        ret = blockThreshold_denoise_int16(denoise_handle, inbuf, frame_size);
         //if (frm_cnt == 100) {
         //    fprintf(stdout, "reset\n");
         //    blockThreshold_reset(&denoise_handle);
@@ -100,7 +101,7 @@ int main(int argc, char *argv[])
         } else if (ret == MARS_NEED_MORE_SAMPLES) {
             continue;
         } else if (ret == MARS_CAN_OUTPUT) {
-            int32_t len = blockThreshold_output_int16(&denoise_handle, outbuf, outbuf_len);
+            int32_t len = blockThreshold_output_int16(denoise_handle, outbuf, outbuf_len);
             fwrite(outbuf, sizeof(int16_t), len, pOutFile);
             fprintf(stdout, "one macro block processed!!\n");
         }
@@ -109,7 +110,7 @@ int main(int argc, char *argv[])
     free(inbuf);
     fclose(pInFile);
     fclose(pOutFile);
-    blockThreshold_free(&denoise_handle);
+    blockThreshold_free(denoise_handle);
 
     return 0;
 }

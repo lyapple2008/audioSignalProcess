@@ -41,8 +41,9 @@ typedef struct MarsBlockThreshold{
  * time_win: ms
  * fs: sample rate
  */
-int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
-                            int32_t time_win, int32_t fs);
+//int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
+//                            int32_t time_win, int32_t fs);
+MarsBlockThreshold_t* blockThreshold_init(int32_t time_win, int32_t fs, int32_t *err);
 
 int32_t blockThreshold_reset(MarsBlockThreshold_t *handle);
 

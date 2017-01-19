@@ -76,12 +76,16 @@ static void make_hanning_window(float *win, int32_t win_size)
     }
 }
 
-int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
-                            int32_t time_win, int32_t fs)
+//int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
+//                            int32_t time_win, int32_t fs)
+MarsBlockThreshold_t* blockThreshold_init(int32_t time_win, int32_t fs, int32_t *err)
 {
-    if (time_win<=0 || fs<=0 || !handle) {
-        return MARS_ERROR_PARAMS;
+    if (time_win<=0 || fs<=0) {
+        *err = MARS_ERROR_PARAMS;
+        return NULL;
     }
+
+    MarsBlockThreshold_t *handle = (MarsBlockThreshold_t *)malloc(sizeof(struct MarsBlockThreshold));
 
     // Compute hanning window
     handle->win_size = fs / 1000 * time_win;
@@ -104,7 +108,7 @@ int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
     handle->max_nblk_freq = 16;
     handle->nblk_time = 3;
     handle->nblk_freq = 5;
-    handle->sigma_noise = 0.047;    
+    handle->sigma_noise = 0.023;//0.047;//TO-DO: 影响去除噪声的程序    
     handle->sigma_hanning_noise = handle->sigma_noise * sqrt(0.375);
     handle->macro_size = handle->half_win_size * handle->max_nblk_time;
     handle->have_nblk_time = 0;
@@ -188,7 +192,8 @@ int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
         goto end;
     }
 
-    return MARS_OK;
+    *err = MARS_OK;
+    return handle;
 
 end:
     SAFE_FREE(handle->win_hanning);
@@ -227,7 +232,8 @@ end:
     SAFE_FREE(handle->forward_fftr_cfg);
     SAFE_FREE(handle->backward_fftr_cfg);
 
-    return MARS_ERROR_MEMORY;
+    *err = MARS_ERROR_MEMORY;
+    return handle;
 }
 
 int32_t blockThreshold_reset(MarsBlockThreshold_t *handle)
@@ -512,7 +518,8 @@ static void blockThreshold_core(MarsBlockThreshold_t *handle)
     idx_freq_last = 1 + half_nb_macroblk_frq * (handle->max_nblk_freq);
     if (idx_freq_last < (handle->win_size / 2 + 1)){
         for (int32_t i = idx_freq_last; i < (handle->win_size / 2 + 1); i++) {
-            a = Lambda_pi*L_pi*pow(handle->sigma_hanning_noise, 2)*(handle->win_size);
+            //a = Lambda_pi*L_pi*pow(handle->sigma_hanning_noise, 2)*(handle->win_size);
+            a = Lambda_pi*L_pi*POW2(handle->sigma_hanning_noise)*(handle->win_size);
             a = 1 - a / power_STFT(handle->stft_coef, 0, handle->max_nblk_time-1, i, i);
             if (a < 0) {
                 a = 0;
