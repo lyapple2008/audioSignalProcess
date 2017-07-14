@@ -9,7 +9,7 @@ extern "C"{
 int main(int argc, char *argv[])
 {
     //-------------Parse config
-    const char *config_file = "C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\config.jason";
+    const char *config_file = "C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\config.json";
     json_t *config;
     json_error_t error;
 
@@ -77,6 +77,7 @@ int main(int argc, char *argv[])
     
     int32_t readed = 0;
     int32_t frm_cnt = 0;
+
     while (num_samples > frame_size) {
         readed = fread(inbuf, sizeof(int16_t), frame_size, pInFile);
         if (readed != frame_size) {

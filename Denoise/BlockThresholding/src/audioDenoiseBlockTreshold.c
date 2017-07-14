@@ -5,7 +5,7 @@
 
 #define FORWARD_FFT 0
 #define BACKWARD_FFT 1
-#define SAFE_FREE(mem) do{if(!mem) free(mem);}while(0);
+#define SAFE_FREE(mem) do{if(mem) free(mem);}while(0);
 #define POW2(x) ((x)*(x))
 
 static const float m_lambda[3][5] = { { 1.5, 1.8, 2, 2.5, 2.5 },
@@ -108,7 +108,7 @@ MarsBlockThreshold_t* blockThreshold_init(int32_t time_win, int32_t fs, int32_t 
     handle->max_nblk_freq = 16;
     handle->nblk_time = 3;
     handle->nblk_freq = 5;
-    handle->sigma_noise = 0.023;//0.047;//TO-DO: 影响去除噪声的程序    
+    handle->sigma_noise = 0.047;//0.023;//0.047;//TO-DO: 影响去除噪声的程序    
     handle->sigma_hanning_noise = handle->sigma_noise * sqrt(0.375);
     handle->macro_size = handle->half_win_size * handle->max_nblk_time;
     handle->have_nblk_time = 0;
@@ -710,6 +710,7 @@ void blockThreshold_free(MarsBlockThreshold_t *handle)
     }
     SAFE_FREE(handle->forward_fftr_cfg);
     SAFE_FREE(handle->backward_fftr_cfg);
+    SAFE_FREE(handle);
 }
 
 int32_t blockThreshold_max_output(const MarsBlockThreshold_t *handle)

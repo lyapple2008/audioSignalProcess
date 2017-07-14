@@ -337,14 +337,14 @@
     <ClCompile Include="webrtc\common_audio\resampler\sinusoidal_linear_chirp_source.cc">
       <Filter>common_audio\resamler</Filter>
     </ClCompile>
-    <ClCompile Include="test_ns_module.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="webrtc\modules\audio_processing\ns\noise_suppression.c">
       <Filter>ns</Filter>
     </ClCompile>
     <ClCompile Include="webrtc\modules\audio_processing\ns\ns_core.c">
       <Filter>ns</Filter>
+    </ClCompile>
+    <ClCompile Include="test_aec_module.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

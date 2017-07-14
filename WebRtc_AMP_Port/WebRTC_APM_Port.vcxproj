@@ -56,7 +56,7 @@
     <ClInclude Include="webrtc\system_wrappers\interface\cpu_features_wrapper.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test_ns_module.cpp" />
+    <ClCompile Include="test_aec_module.cpp" />
     <ClCompile Include="wav_io.c" />
     <ClCompile Include="webrtc\base\checks.cc" />
     <ClCompile Include="webrtc\common_audio\audio_util.cc" />
@@ -164,6 +164,7 @@
       <SDLCheck>true</SDLCheck>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -178,7 +179,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;WEBRTC_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>

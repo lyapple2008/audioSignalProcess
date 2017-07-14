@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="kiss_fft">
+      <UniqueIdentifier>{ed7465d7-40a3-42e9-a250-a486afd98bb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{7af84e6b-bce7-416a-872e-ca974131e257}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="wav_parser">
+      <UniqueIdentifier>{6bce8565-78b9-45cb-a846-0b81d7276d63}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\common\kiss_fft\_kiss_fft_guts.h">
+      <Filter>kiss_fft</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\kiss_fft\kiss_fft.h">
+      <Filter>kiss_fft</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\kiss_fft\kiss_fftr.h">
+      <Filter>kiss_fft</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BlockThresholding\src\audioDenoiseBlockTreshold.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\wav_parser\wav_io.h">
+      <Filter>wav_parser</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\common\kiss_fft\kiss_fft.c">
+      <Filter>kiss_fft</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\kiss_fft\kiss_fftr.c">
+      <Filter>kiss_fft</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BlockThresholding\src\audioDenoiseBlockTreshold.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\wav_parser\wav_io.c">
+      <Filter>wav_parser</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

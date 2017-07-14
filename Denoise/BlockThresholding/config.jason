@@ -1,5 +1,0 @@
-{
-	"infile":"C:\\CloudMusic\\wendu_R.wav",
-	"outfile":"C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\wend_R_blockThreshold.wav",
-	"frame_ms":40
-}
