@@ -38,6 +38,9 @@
     <ClInclude Include="webrtc\modules\audio_processing\aec\aec_resampler.h" />
     <ClInclude Include="webrtc\modules\audio_processing\aec\echo_cancellation_internal.h" />
     <ClInclude Include="webrtc\modules\audio_processing\aec\include\echo_cancellation.h" />
+    <ClInclude Include="webrtc\modules\audio_processing\agc\legacy\analog_agc.h" />
+    <ClInclude Include="webrtc\modules\audio_processing\agc\legacy\digital_agc.h" />
+    <ClInclude Include="webrtc\modules\audio_processing\agc\legacy\gain_control.h" />
     <ClInclude Include="webrtc\modules\audio_processing\audio_buffer.h" />
     <ClInclude Include="webrtc\modules\audio_processing\channel_buffer.h" />
     <ClInclude Include="webrtc\modules\audio_processing\ns\defines.h" />
@@ -56,7 +59,7 @@
     <ClInclude Include="webrtc\system_wrappers\interface\cpu_features_wrapper.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test_aec_module.cpp" />
+    <ClCompile Include="test_agc_module.cpp" />
     <ClCompile Include="wav_io.c" />
     <ClCompile Include="webrtc\base\checks.cc" />
     <ClCompile Include="webrtc\common_audio\audio_util.cc" />
@@ -72,6 +75,7 @@
     <ClCompile Include="webrtc\common_audio\signal_processing\copy_set_operations.c" />
     <ClCompile Include="webrtc\common_audio\signal_processing\cross_correlation.c" />
     <ClCompile Include="webrtc\common_audio\signal_processing\division_operations.c" />
+    <ClCompile Include="webrtc\common_audio\signal_processing\dot_product_with_scale.c" />
     <ClCompile Include="webrtc\common_audio\signal_processing\downsample_fast.c" />
     <ClCompile Include="webrtc\common_audio\signal_processing\energy.c" />
     <ClCompile Include="webrtc\common_audio\signal_processing\get_scaling_square.c" />
@@ -102,6 +106,8 @@
     <ClCompile Include="webrtc\modules\audio_processing\aec\aec_rdft_sse2.c" />
     <ClCompile Include="webrtc\modules\audio_processing\aec\aec_resampler.c" />
     <ClCompile Include="webrtc\modules\audio_processing\aec\echo_cancellation.c" />
+    <ClCompile Include="webrtc\modules\audio_processing\agc\legacy\analog_agc.c" />
+    <ClCompile Include="webrtc\modules\audio_processing\agc\legacy\digital_agc.c" />
     <ClCompile Include="webrtc\modules\audio_processing\audio_buffer.cc" />
     <ClCompile Include="webrtc\modules\audio_processing\channel_buffer.cc" />
     <ClCompile Include="webrtc\modules\audio_processing\ns\noise_suppression.c" />

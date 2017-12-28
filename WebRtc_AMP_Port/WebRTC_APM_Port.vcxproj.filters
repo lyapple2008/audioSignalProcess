@@ -36,6 +36,9 @@
     <Filter Include="common_audio\resamler">
       <UniqueIdentifier>{ed2e096d-f73a-4862-96ae-5d2d2c90a115}</UniqueIdentifier>
     </Filter>
+    <Filter Include="agc">
+      <UniqueIdentifier>{fb92c5d9-670e-4957-9a2f-0860979697d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="webrtc\modules\audio_processing\ns\include\noise_suppression_x.h">
@@ -166,6 +169,15 @@
     </ClInclude>
     <ClInclude Include="webrtc\modules\audio_processing\ns\ns_core.h">
       <Filter>ns</Filter>
+    </ClInclude>
+    <ClInclude Include="webrtc\modules\audio_processing\agc\legacy\analog_agc.h">
+      <Filter>agc</Filter>
+    </ClInclude>
+    <ClInclude Include="webrtc\modules\audio_processing\agc\legacy\digital_agc.h">
+      <Filter>agc</Filter>
+    </ClInclude>
+    <ClInclude Include="webrtc\modules\audio_processing\agc\legacy\gain_control.h">
+      <Filter>agc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -343,8 +355,17 @@
     <ClCompile Include="webrtc\modules\audio_processing\ns\ns_core.c">
       <Filter>ns</Filter>
     </ClCompile>
-    <ClCompile Include="test_aec_module.cpp">
+    <ClCompile Include="webrtc\modules\audio_processing\agc\legacy\analog_agc.c">
+      <Filter>agc</Filter>
+    </ClCompile>
+    <ClCompile Include="webrtc\modules\audio_processing\agc\legacy\digital_agc.c">
+      <Filter>agc</Filter>
+    </ClCompile>
+    <ClCompile Include="test_agc_module.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="webrtc\common_audio\signal_processing\dot_product_with_scale.c">
+      <Filter>common_audio</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

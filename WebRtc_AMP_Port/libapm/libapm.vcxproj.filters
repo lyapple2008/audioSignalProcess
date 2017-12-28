@@ -33,6 +33,9 @@
     <Filter Include="utility">
       <UniqueIdentifier>{d7b74704-6380-41f2-b783-819255d4af09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="agc">
+      <UniqueIdentifier>{bd77c5ae-f508-4ec2-bf10-724dc7aee538}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -92,6 +95,18 @@
     <ClInclude Include="..\webrtc\system_wrappers\interface\cpu_features_wrapper.h">
       <Filter>system_wrapper</Filter>
     </ClInclude>
+    <ClInclude Include="..\webrtc\modules\audio_processing\agc\legacy\analog_agc.h">
+      <Filter>agc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\webrtc\modules\audio_processing\agc\legacy\digital_agc.h">
+      <Filter>agc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\webrtc\modules\audio_processing\agc\legacy\gain_control.h">
+      <Filter>agc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\apm_agc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\webrtc\modules\audio_processing\ns\noise_suppression.c">
@@ -147,6 +162,15 @@
     </ClCompile>
     <ClCompile Include="..\webrtc\system_wrappers\source\cpu_features.cc">
       <Filter>system_wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\webrtc\modules\audio_processing\agc\legacy\analog_agc.c">
+      <Filter>agc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\webrtc\modules\audio_processing\agc\legacy\digital_agc.c">
+      <Filter>agc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\apm_agc.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

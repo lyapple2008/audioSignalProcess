@@ -15,7 +15,7 @@ class APM_NS{
 public:
 	APM_NS():capture_buffer(0),
 			 channels_ptr_i(0),
-			 init_flag(false){};
+			 init_flag(false){}
 	~APM_NS();
 	/*
 	* initNsModule
