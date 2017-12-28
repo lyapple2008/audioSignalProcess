@@ -3,7 +3,8 @@
 #include <vector>
 // implement noise suppression module
 
-typedef struct NsHandleT NsHandle;
+typedef struct NsHandleT ApmNsHandle;
+typedef void ApmAgcHandle;
 
 enum {
 	NS_Mode_Mild = 0,
@@ -13,9 +14,7 @@ enum {
 
 class APM_NS{
 public:
-	APM_NS():capture_buffer(0),
-			 channels_ptr_i(0),
-			 init_flag(false){}
+	APM_NS(){}
 	~APM_NS();
 	/*
 	* initNsModule
@@ -24,10 +23,13 @@ public:
 	*	  - ns_mode		   : NS_Mode_Mild (6dB), Ns_Mode_Mideum (10dB), Ns_Mode_Aggressive (15dB)
 	*     - input_frames   : input frames size
 	*     - input_channels : input channels
+    *     - doAgc          : whether do agc before noise reduction
 	* Return value : 0  - ok
 	*                -1 - error
 	*/
-	bool initNsModule(unsigned int frequency, int ns_mode, int input_frames, int input_channels);
+	bool initNsModule(unsigned int frequency, int ns_mode, 
+                      int input_frames, int input_channels,
+                      bool doAgc);
 
 	/*
 	* processCaptureStream
@@ -43,13 +45,16 @@ public:
 	void processCaptureStream(float* data, int samples_per_channel, int input_channels);
 	void processCaptureStream(short* data, int samples_per_channel, int input_channels);
 private:
-	std::vector<NsHandle *> m_handles;
-	void *capture_buffer;
-	short **channels_ptr_i;
+	std::vector<ApmNsHandle *> m_nsHandles;
+    std::vector<ApmAgcHandle *> m_agcHandles;
+    std::vector<int> m_captureLevel;
+	void *capture_buffer = nullptr;
+	short **channels_ptr_i = nullptr;
 	unsigned int m_frequency;
 	int m_channels;
 	int m_ns_mode;
-	bool init_flag;//ns module has been initialed successfully
+    bool m_hasInit = false;
+    bool m_doAgc = false;
 };
 
 

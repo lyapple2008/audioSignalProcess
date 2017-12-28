@@ -45,11 +45,12 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
+    bool doAgc = true;
 	uint32_t frequency = header.format.sample_per_sec;//16000;
 	uint16_t length = frequency / 100;
 	int16_t channels = header.format.channels;
 	APM_NS ns_module;
-	ns_module.initNsModule(frequency, Ns_Mode_Mideum, length, channels);
+    ns_module.initNsModule(frequency, Ns_Mode_Mideum, length, channels, doAgc);
 	int16_t *input = new int16_t[channels*length];
 
 	memset(input, 0, channels*length*sizeof(int16_t));

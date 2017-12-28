@@ -55,16 +55,16 @@ int main(int argc, char* argv[])
 
     uint32_t frequency = header.format.sample_per_sec;//16000;
     uint16_t length = frequency / 100;
-    if (frequency == 8000) {
-        length = 80;
-    } else if (frequency == 16000 ||
-               frequency == 32000 ||
-               frequency == 48000) {
-        length = 160;
-    } else {
-        printf("Only support sample rate: 8000, 16000, 32000, 48000\n");
-        return -1;
-    }
+    //if (frequency == 8000) {
+    //    length = 80;
+    //} else if (frequency == 16000 ||
+    //           frequency == 32000 ||
+    //           frequency == 48000) {
+    //    length = 160;
+    //} else {
+    //    printf("Only support sample rate: 8000, 16000, 32000, 48000\n");
+    //    return -1;
+    //}
     int16_t channels = header.format.channels;
 
     if (channels > 1) {
@@ -102,19 +102,19 @@ int main(int argc, char* argv[])
         capture_frame.UpdateFrame(0, 0, input, length, frequency,
             AudioFrame::kNormalSpeech, AudioFrame::kVadUnknown, channels);
         capture_buffer.DeinterleaveFrom(&capture_frame);
+        int ret = 0;
+        //int ret = WebRtcAgc_VirtualMic(
+        //            handle,
+        //            capture_buffer.split_bands(0),
+        //            capture_buffer.num_bands(),
+        //            static_cast<int16_t>(capture_buffer.samples_per_split_channel()),
+        //            micLevel,
+        //            &micLevelIn);
 
-        int ret = WebRtcAgc_VirtualMic(
-                    handle,
-                    capture_buffer.split_bands(0),
-                    capture_buffer.num_bands(),
-                    static_cast<int16_t>(capture_buffer.samples_per_split_channel()),
-                    micLevel,
-                    &micLevelIn);
-
-        if (ret != 0) {
-            printf("Failure in WebRtcAgc_VirtualMic\n");
-            return -1;
-        }
+        //if (ret != 0) {
+        //    printf("Failure in WebRtcAgc_VirtualMic\n");
+        //    return -1;
+        //}
 
         uint8_t stream_is_saturated = 0;
         ret = WebRtcAgc_Process(

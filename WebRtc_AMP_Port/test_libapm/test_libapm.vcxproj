@@ -54,7 +54,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -86,11 +86,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\wav_io.c" />
-    <ClCompile Include="test_apm_agc.cpp" />
     <ClCompile Include="test_apm_ns.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\wav_io.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\libapm\libapm.vcxproj">
+      <Project>{80953ea3-2b2d-4017-82ef-d17e41ae78c7}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

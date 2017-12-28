@@ -97,6 +97,7 @@ copy $(OutDir)$(ProjectName).lib $(Outdir)..\finalVersion\lib\$(ProjectName)_d.l
     <ClInclude Include="..\webrtc\common_audio\resampler\push_sinc_resampler.h" />
     <ClInclude Include="..\webrtc\common_audio\resampler\sinc_resampler.h" />
     <ClInclude Include="..\webrtc\common_audio\resampler\sinusoidal_linear_chirp_source.h" />
+    <ClInclude Include="..\webrtc\common_audio\signal_processing\resample_by_2_internal.h" />
     <ClInclude Include="..\webrtc\modules\audio_processing\agc\legacy\analog_agc.h" />
     <ClInclude Include="..\webrtc\modules\audio_processing\agc\legacy\digital_agc.h" />
     <ClInclude Include="..\webrtc\modules\audio_processing\agc\legacy\gain_control.h" />
@@ -110,7 +111,6 @@ copy $(OutDir)$(ProjectName).lib $(Outdir)..\finalVersion\lib\$(ProjectName)_d.l
     <ClInclude Include="..\webrtc\modules\audio_processing\utility\fft4g.h" />
     <ClInclude Include="..\webrtc\system_wrappers\interface\aligned_malloc.h" />
     <ClInclude Include="..\webrtc\system_wrappers\interface\cpu_features_wrapper.h" />
-    <ClInclude Include="include\apm_agc.h" />
     <ClInclude Include="include\apm_ns.h" />
   </ItemGroup>
   <ItemGroup>
@@ -122,7 +122,19 @@ copy $(OutDir)$(ProjectName).lib $(Outdir)..\finalVersion\lib\$(ProjectName)_d.l
     <ClCompile Include="..\webrtc\common_audio\resampler\sinc_resampler.cc" />
     <ClCompile Include="..\webrtc\common_audio\resampler\sinc_resampler_sse.cc" />
     <ClCompile Include="..\webrtc\common_audio\resampler\sinusoidal_linear_chirp_source.cc" />
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\copy_set_operations.c" />
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\division_operations.c" />
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\dot_product_with_scale.c" />
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\downsample_fast.c" />
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\resample.c" />
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\resample_48khz.c" />
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\resample_by_2.c" />
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\resample_by_2_internal.c" />
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\resample_fractional.c" />
     <ClCompile Include="..\webrtc\common_audio\signal_processing\splitting_filter_c.c" />
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\spl_init.c" />
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\spl_sqrt.c" />
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\spl_sqrt_floor.c" />
     <ClCompile Include="..\webrtc\modules\audio_processing\agc\legacy\analog_agc.c" />
     <ClCompile Include="..\webrtc\modules\audio_processing\agc\legacy\digital_agc.c" />
     <ClCompile Include="..\webrtc\modules\audio_processing\audio_buffer.cc" />
@@ -133,7 +145,6 @@ copy $(OutDir)$(ProjectName).lib $(Outdir)..\finalVersion\lib\$(ProjectName)_d.l
     <ClCompile Include="..\webrtc\modules\audio_processing\utility\fft4g.c" />
     <ClCompile Include="..\webrtc\system_wrappers\source\aligned_malloc.cc" />
     <ClCompile Include="..\webrtc\system_wrappers\source\cpu_features.cc" />
-    <ClCompile Include="src\apm_agc.cpp" />
     <ClCompile Include="src\apm_ns.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

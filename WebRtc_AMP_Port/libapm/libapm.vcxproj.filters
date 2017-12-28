@@ -104,8 +104,8 @@
     <ClInclude Include="..\webrtc\modules\audio_processing\agc\legacy\gain_control.h">
       <Filter>agc</Filter>
     </ClInclude>
-    <ClInclude Include="include\apm_agc.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="..\webrtc\common_audio\signal_processing\resample_by_2_internal.h">
+      <Filter>common_audio\resampler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -169,8 +169,41 @@
     <ClCompile Include="..\webrtc\modules\audio_processing\agc\legacy\digital_agc.c">
       <Filter>agc</Filter>
     </ClCompile>
-    <ClCompile Include="src\apm_agc.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\dot_product_with_scale.c">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\copy_set_operations.c">
+      <Filter>common_audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\resample.c">
+      <Filter>common_audio\resampler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\resample_48khz.c">
+      <Filter>common_audio\resampler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\resample_by_2.c">
+      <Filter>common_audio\resampler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\resample_by_2_internal.c">
+      <Filter>common_audio\resampler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\resample_fractional.c">
+      <Filter>common_audio\resampler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\downsample_fast.c">
+      <Filter>common_audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\division_operations.c">
+      <Filter>common_audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\spl_sqrt.c">
+      <Filter>common_audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\spl_init.c">
+      <Filter>common_audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\webrtc\common_audio\signal_processing\spl_sqrt_floor.c">
+      <Filter>common_audio</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
