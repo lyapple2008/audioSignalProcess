@@ -45,12 +45,17 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-    bool doAgc = true;
+    bool doAgc = false;
 	uint32_t frequency = header.format.sample_per_sec;//16000;
 	uint16_t length = frequency / 100;
 	int16_t channels = header.format.channels;
 	APM_NS ns_module;
-    ns_module.initNsModule(frequency, Ns_Mode_Mideum, length, channels, doAgc);
+    //ns_module.initNsModule(frequency, Ns_Mode_Mideum, length, channels, doAgc);
+    bool ret = ns_module.initRnnoiseModule(frequency, length, channels, doAgc);
+    if (!ret) {
+        printf("Fail to init rnnoise module\n");
+        return -1;
+    }
 	int16_t *input = new int16_t[channels*length];
 
 	memset(input, 0, channels*length*sizeof(int16_t));
@@ -64,7 +69,8 @@ int main(int argc, char* argv[])
 	{
 		int readed = read_samples(input, channels*length, &header, fr);
 
-		ns_module.processCaptureStream(input, readed/channels, channels);
+		//ns_module.processCaptureStream(input, readed/channels, channels);
+        ns_module.processUseRnnoise(input, readed / channels, channels);
 		//filter_int16(&state, input, readed);
 
 		write_samples(input, readed, &header, fw);

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BlockThresholding", "BlockThresholding\BlockThresholding.vcxproj", "{B609BD85-8119-49A0-BB31-276F26875550}"
 EndProject
@@ -12,25 +12,41 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Performance1.psess = Performance1.psess
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logmmse", "logmmse\logmmse.vcxproj", "{A0734E6A-15C0-4723-BD0E-92D99F026584}"
+EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
 		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B609BD85-8119-49A0-BB31-276F26875550}.Debug|Win32.ActiveCfg = Debug|Win32
 		{B609BD85-8119-49A0-BB31-276F26875550}.Debug|Win32.Build.0 = Debug|Win32
+		{B609BD85-8119-49A0-BB31-276F26875550}.Debug|x64.ActiveCfg = Debug|Win32
 		{B609BD85-8119-49A0-BB31-276F26875550}.Release|Win32.ActiveCfg = Release|Win32
 		{B609BD85-8119-49A0-BB31-276F26875550}.Release|Win32.Build.0 = Release|Win32
+		{B609BD85-8119-49A0-BB31-276F26875550}.Release|x64.ActiveCfg = Release|Win32
 		{C3457D96-9206-47A1-BC20-D75C32A88BAE}.Debug|Win32.ActiveCfg = Debug|Win32
 		{C3457D96-9206-47A1-BC20-D75C32A88BAE}.Debug|Win32.Build.0 = Debug|Win32
+		{C3457D96-9206-47A1-BC20-D75C32A88BAE}.Debug|x64.ActiveCfg = Debug|Win32
 		{C3457D96-9206-47A1-BC20-D75C32A88BAE}.Release|Win32.ActiveCfg = Release|Win32
 		{C3457D96-9206-47A1-BC20-D75C32A88BAE}.Release|Win32.Build.0 = Release|Win32
+		{C3457D96-9206-47A1-BC20-D75C32A88BAE}.Release|x64.ActiveCfg = Release|Win32
+		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Debug|Win32.Build.0 = Debug|Win32
+		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Debug|x64.ActiveCfg = Debug|x64
+		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Debug|x64.Build.0 = Debug|x64
+		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Release|Win32.ActiveCfg = Release|Win32
+		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Release|Win32.Build.0 = Release|Win32
+		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Release|x64.ActiveCfg = Release|x64
+		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

@@ -36,6 +36,9 @@
     <Filter Include="agc">
       <UniqueIdentifier>{bd77c5ae-f508-4ec2-bf10-724dc7aee538}</UniqueIdentifier>
     </Filter>
+    <Filter Include="rnnoise">
+      <UniqueIdentifier>{54fef385-7353-4133-8ada-915743c5bcae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -106,6 +109,39 @@
     </ClInclude>
     <ClInclude Include="..\webrtc\common_audio\signal_processing\resample_by_2_internal.h">
       <Filter>common_audio\resampler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rnnoise\_kiss_fft_guts.h">
+      <Filter>rnnoise</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rnnoise\arch.h">
+      <Filter>rnnoise</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rnnoise\celt_lpc.h">
+      <Filter>rnnoise</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rnnoise\common.h">
+      <Filter>rnnoise</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rnnoise\kiss_fft.h">
+      <Filter>rnnoise</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rnnoise\opus_types.h">
+      <Filter>rnnoise</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rnnoise\pitch.h">
+      <Filter>rnnoise</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rnnoise\rnn.h">
+      <Filter>rnnoise</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rnnoise\rnn_data.h">
+      <Filter>rnnoise</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rnnoise\rnnoise.h">
+      <Filter>rnnoise</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rnnoise\tansig_table.h">
+      <Filter>rnnoise</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -204,6 +240,24 @@
     </ClCompile>
     <ClCompile Include="..\webrtc\common_audio\signal_processing\spl_sqrt_floor.c">
       <Filter>common_audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rnnoise\celt_lpc.c">
+      <Filter>rnnoise</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rnnoise\denoise.c">
+      <Filter>rnnoise</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rnnoise\kiss_fft.c">
+      <Filter>rnnoise</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rnnoise\pitch.c">
+      <Filter>rnnoise</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rnnoise\rnn.c">
+      <Filter>rnnoise</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rnnoise\rnn_data.c">
+      <Filter>rnnoise</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

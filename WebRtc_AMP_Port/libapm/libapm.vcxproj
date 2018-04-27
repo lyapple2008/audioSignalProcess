@@ -60,9 +60,20 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)include\apm_ns.h $(ProjectDir)..\finalVersion\include\
+      <Command>copy $(ProjectDir)include\apm_ns.h $(ProjectDir)..\finalVersion\include\apm_ns.h
 copy $(OutDir)$(ProjectName).lib $(Outdir)..\finalVersion\lib\$(ProjectName)_d.lib</Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -74,7 +85,7 @@ copy $(OutDir)$(ProjectName).lib $(Outdir)..\finalVersion\lib\$(ProjectName)_d.l
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;WEBRTC_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -83,13 +94,33 @@ copy $(OutDir)$(ProjectName).lib $(Outdir)..\finalVersion\lib\$(ProjectName)_d.l
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(OutDir)$(ProjectName).lib $(OutDir)..\finalVersion\lib\$(ProjectName).lib</Command>
+      <Command>copy $(ProjectDir)include\apm_ns.h $(ProjectDir)..\finalVersion\include\apm_ns.h
+copy $(OutDir)$(ProjectName).lib $(Outdir)..\finalVersion\lib\$(ProjectName).lib</Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\rnnoise\arch.h" />
+    <ClInclude Include="..\rnnoise\celt_lpc.h" />
+    <ClInclude Include="..\rnnoise\common.h" />
+    <ClInclude Include="..\rnnoise\kiss_fft.h" />
+    <ClInclude Include="..\rnnoise\opus_types.h" />
+    <ClInclude Include="..\rnnoise\pitch.h" />
+    <ClInclude Include="..\rnnoise\rnn.h" />
+    <ClInclude Include="..\rnnoise\rnnoise.h" />
+    <ClInclude Include="..\rnnoise\rnn_data.h" />
+    <ClInclude Include="..\rnnoise\tansig_table.h" />
+    <ClInclude Include="..\rnnoise\_kiss_fft_guts.h" />
     <ClInclude Include="..\webrtc\base\checks.h" />
     <ClInclude Include="..\webrtc\common_audio\include\audio_util.h" />
     <ClInclude Include="..\webrtc\common_audio\resampler\include\push_resampler.h" />
@@ -114,6 +145,12 @@ copy $(OutDir)$(ProjectName).lib $(Outdir)..\finalVersion\lib\$(ProjectName)_d.l
     <ClInclude Include="include\apm_ns.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\rnnoise\celt_lpc.c" />
+    <ClCompile Include="..\rnnoise\denoise.c" />
+    <ClCompile Include="..\rnnoise\kiss_fft.c" />
+    <ClCompile Include="..\rnnoise\pitch.c" />
+    <ClCompile Include="..\rnnoise\rnn.c" />
+    <ClCompile Include="..\rnnoise\rnn_data.c" />
     <ClCompile Include="..\webrtc\base\checks.cc" />
     <ClCompile Include="..\webrtc\common_audio\audio_util.cc" />
     <ClCompile Include="..\webrtc\common_audio\resampler\push_resampler.cc" />

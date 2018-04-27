@@ -5,6 +5,7 @@
 
 typedef struct NsHandleT ApmNsHandle;
 typedef void ApmAgcHandle;
+typedef struct DenoiseState DenoiseState;
 
 enum {
 	NS_Mode_Mild = 0,
@@ -44,9 +45,37 @@ public:
 	*/
 	void processCaptureStream(float* data, int samples_per_channel, int input_channels);
 	void processCaptureStream(short* data, int samples_per_channel, int input_channels);
+
+
+    /*
+    * initRnnoiseModule
+    * Input:
+    *     - frequency	   : sample rate, only support 48000Hz now
+    *     - input_frames   : input frames size, must be 480
+    *     - input_channels : input channels
+    * Return value: 0  - ok
+    *               -1 - error
+    */
+    bool initRnnoiseModule(unsigned int frequency, int input_frames, int input_channels, bool doAgc);
+
+    /*
+    * processUseRnnoise
+    * 
+    * Input:
+    *     - data				: interleave samples
+    *	  - samples_per_channel	: the number of samples in each channel
+    *     - channels		    : the number of channels
+    *     - doAgc               : whether do auto gain control before denoise
+    * Output:
+    *     - data                : the denoise process will do in place
+    * Return value : 0  - ok
+    *                -1 - error
+    */
+    void processUseRnnoise(short* data, int samples_per_channel, int input_channels);
 private:
 	std::vector<ApmNsHandle *> m_nsHandles;
     std::vector<ApmAgcHandle *> m_agcHandles;
+    std::vector<DenoiseState *> m_rnnoiseHandles;
     std::vector<int> m_captureLevel;
 	void *capture_buffer = nullptr;
 	short **channels_ptr_i = nullptr;
@@ -55,6 +84,8 @@ private:
 	int m_ns_mode;
     bool m_hasInit = false;
     bool m_doAgc = false;
+
+    float rnnBuf[480];
 };
 
 
