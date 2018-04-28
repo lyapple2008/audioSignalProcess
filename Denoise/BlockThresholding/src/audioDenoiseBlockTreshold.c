@@ -9,7 +9,11 @@
 #define SAFE_FREE(mem) do{if(mem) free(mem);}while(0);
 #define POW2(x) ((x)*(x))
 
-typedef struct MarsBlockThreshold {
+static const float m_lambda[3][5] = { { 1.5, 1.8, 2, 2.5, 2.5 },
+                                      { 1.8, 2, 2.5, 3.5, 3.5 },
+                                      { 2, 2.5, 3.5, 4.7, 4.7 } };
+
+struct MarsBlockThreshold {
 	int32_t win_size;    // window size--odd window
 	int32_t half_win_size; // half window size
 	float *win_hanning; // hanning window
@@ -36,9 +40,6 @@ typedef struct MarsBlockThreshold {
 	kiss_fftr_cfg backward_fftr_cfg;
 };
 
-static const float m_lambda[3][5] = { { 1.5, 1.8, 2, 2.5, 2.5 },
-                                      { 1.8, 2, 2.5, 3.5, 3.5 },
-                                      { 2, 2.5, 3.5, 4.7, 4.7 } };
 
 #ifdef _DEBUG
 void save_cpx_matrix(kiss_fft_cpx **cpx_matrix, int32_t row_num, int32_t col_num, const char *file)
@@ -136,7 +137,7 @@ MarsBlockThreshold_t* blockThreshold_init(int32_t time_win, int32_t fs, int32_t 
     handle->max_nblk_freq = 16;
     handle->nblk_time = 3;
     handle->nblk_freq = 5;
-    handle->sigma_noise = 0.047;//0.023;//0.047;//TO-DO: 影响去除噪声的程序    
+    handle->sigma_noise = 0.047;//0.023;//0.047;//TO-DO: this parameter affect the final result    
     handle->sigma_hanning_noise = handle->sigma_noise * sqrt(0.375);
     handle->macro_size = handle->half_win_size * handle->max_nblk_time;
     handle->have_nblk_time = 0;
