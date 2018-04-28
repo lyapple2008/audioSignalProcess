@@ -1,4 +1,5 @@
 #include "audioDenoiseBlockTreshold.h"
+#include "../../../common/kiss_fft/kiss_fftr.h"
 
 #define _USE_MATH_DEFINES // to use macro M_PI in math.h
 #include <math.h>
@@ -7,6 +8,33 @@
 #define BACKWARD_FFT 1
 #define SAFE_FREE(mem) do{if(mem) free(mem);}while(0);
 #define POW2(x) ((x)*(x))
+
+typedef struct MarsBlockThreshold {
+	int32_t win_size;    // window size--odd window
+	int32_t half_win_size; // half window size
+	float *win_hanning; // hanning window
+
+	int32_t max_nblk_time;
+	int32_t max_nblk_freq;
+	int32_t nblk_time;  // the number of block in time dimension
+	int32_t nblk_freq;  // the number of block in frequency dimension
+	int32_t macro_size; // the number of sample in one macro block
+	int32_t have_nblk_time;
+	float **SURE_matrix;
+
+	float sigma_noise;  // assumption the sigma of gaussian white noise
+	float sigma_hanning_noise;
+	float *inbuf;       // internal buffer for keep one window size input samples
+	float *inbuf_win;
+	float *outbuf;      // internal buffer for keep one macro block output samples
+
+	kiss_fft_cpx **stft_coef;
+	kiss_fft_cpx **stft_thre;
+	kiss_fft_cpx **stft_coef_block;
+	kiss_fft_cpx **stft_coef_block_norm;
+	kiss_fftr_cfg forward_fftr_cfg;
+	kiss_fftr_cfg backward_fftr_cfg;
+};
 
 static const float m_lambda[3][5] = { { 1.5, 1.8, 2, 2.5, 2.5 },
                                       { 1.8, 2, 2.5, 3.5, 3.5 },
