@@ -589,7 +589,7 @@ int32_t blockThreshold_denoise_float(MarsBlockThreshold_t *handle,
     }
 
 #ifdef _DEBUG
-    save_cpx_matrix(handle->stft_coef, handle->max_nblk_time, handle->win_size, "stft_coef.txt");
+    //save_cpx_matrix(handle->stft_coef, handle->max_nblk_time, handle->win_size, "stft_coef.txt");
 #endif
 
     // block thresholding
@@ -709,6 +709,7 @@ void blockThreshold_free(MarsBlockThreshold_t *handle)
         for (int32_t i = 0; i < handle->nblk_time; i++) {
             SAFE_FREE(handle->SURE_matrix[i]);
         }
+		SAFE_FREE(handle->SURE_matrix);
     }
     SAFE_FREE(handle->inbuf);
     SAFE_FREE(handle->outbuf);
