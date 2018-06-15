@@ -14,6 +14,7 @@ static const float m_lambda[3][5] = { { 1.5, 1.8, 2, 2.5, 2.5 },
                                       { 2, 2.5, 3.5, 4.7, 4.7 } };
 
 struct MarsBlockThreshold {
+	int32_t fs;// sample rate
 	int32_t win_size;    // window size--odd window
 	int32_t half_win_size; // half window size
 	float *win_hanning; // hanning window
@@ -105,8 +106,6 @@ static void make_hanning_window(float *win, int32_t win_size)
     }
 }
 
-//int32_t blockThreshold_init(MarsBlockThreshold_t *handle,
-//                            int32_t time_win, int32_t fs)
 MarsBlockThreshold_t* blockThreshold_init(int32_t time_win, int32_t fs, int32_t *err)
 {
     if (time_win<=0 || fs<=0) {
@@ -117,6 +116,7 @@ MarsBlockThreshold_t* blockThreshold_init(int32_t time_win, int32_t fs, int32_t 
     MarsBlockThreshold_t *handle = (MarsBlockThreshold_t *)malloc(sizeof(struct MarsBlockThreshold));
 
     // Compute hanning window
+	handle->fs = fs;
     handle->win_size = fs / 1000 * time_win;
     if (handle->win_size & 0x01) {
         handle->win_size += 1;// even window
@@ -134,10 +134,10 @@ MarsBlockThreshold_t* blockThreshold_init(int32_t time_win, int32_t fs, int32_t 
 
     //Compute block params
     handle->max_nblk_time = 8;
-    handle->max_nblk_freq = 16;
+	handle->max_nblk_freq = 16;
     handle->nblk_time = 3;
     handle->nblk_freq = 5;
-    handle->sigma_noise = 0.047;//0.023;//0.047;//TO-DO: this parameter affect the final result    
+    handle->sigma_noise = 0.047;//TO-DO: this parameter affect the final result    
     handle->sigma_hanning_noise = handle->sigma_noise * sqrt(0.375);
     handle->macro_size = handle->half_win_size * handle->max_nblk_time;
     handle->have_nblk_time = 0;
@@ -498,6 +498,8 @@ static void blockThreshold_repair_positive_freq(MarsBlockThreshold_t *handle)
 static void blockThreshold_wiener(MarsBlockThreshold_t *handle)
 {
     float wiener = 1.0;
+	float low_f = 500.0;
+	int low_f_index = low_f / (handle->fs / handle->half_win_size);
 
     for (int32_t t = 0; t < handle->max_nblk_time; t++){
         for (int32_t f = 0; f < (handle->win_size+1)/2; f++) {
@@ -510,6 +512,12 @@ static void blockThreshold_wiener(MarsBlockThreshold_t *handle)
             wiener = wiener / (wiener + (handle->win_size) * POW2(sigma));
             handle->stft_coef[t][f].r *= wiener;
             handle->stft_coef[t][f].i *= wiener;
+			
+			// attenuate more below low_f Hz
+			if (f < low_f_index) {
+				handle->stft_coef[t][f].r *= 0.45;
+				handle->stft_coef[t][f].i *= 0.45;
+			}
         }
     }
 }

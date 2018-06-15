@@ -10,8 +10,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BlockThresholding", "BlockT
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BlockThresholding_GenLib", "BlockThresholding_GenLib\BlockThresholding_GenLib.vcxproj", "{C3457D96-9206-47A1-BC20-D75C32A88BAE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logmmse", "logmmse\logmmse.vcxproj", "{A0734E6A-15C0-4723-BD0E-92D99F026584}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -32,14 +30,6 @@ Global
 		{C3457D96-9206-47A1-BC20-D75C32A88BAE}.Release|Win32.ActiveCfg = Release|Win32
 		{C3457D96-9206-47A1-BC20-D75C32A88BAE}.Release|Win32.Build.0 = Release|Win32
 		{C3457D96-9206-47A1-BC20-D75C32A88BAE}.Release|x64.ActiveCfg = Release|Win32
-		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Debug|Win32.ActiveCfg = Debug|Win32
-		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Debug|Win32.Build.0 = Debug|Win32
-		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Debug|x64.ActiveCfg = Debug|x64
-		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Debug|x64.Build.0 = Debug|x64
-		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Release|Win32.ActiveCfg = Release|Win32
-		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Release|Win32.Build.0 = Release|Win32
-		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Release|x64.ActiveCfg = Release|x64
-		{A0734E6A-15C0-4723-BD0E-92D99F026584}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

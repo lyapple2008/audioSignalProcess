@@ -55,16 +55,16 @@ int main(int argc, char* argv[])
 
     uint32_t frequency = header.format.sample_per_sec;//16000;
     uint16_t length = frequency / 100;
-    //if (frequency == 8000) {
-    //    length = 80;
-    //} else if (frequency == 16000 ||
-    //           frequency == 32000 ||
-    //           frequency == 48000) {
-    //    length = 160;
-    //} else {
-    //    printf("Only support sample rate: 8000, 16000, 32000, 48000\n");
-    //    return -1;
-    //}
+    if (frequency == 8000) {
+        length = 80;
+    } else if (frequency == 16000 ||
+               frequency == 32000 ||
+               frequency == 48000) {
+        length = 160;
+    } else {
+        printf("Only support sample rate: 8000, 16000, 32000, 48000\n");
+        return -1;
+    }
     int16_t channels = header.format.channels;
 
     if (channels > 1) {

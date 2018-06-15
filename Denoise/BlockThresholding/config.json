@@ -1,5 +1,5 @@
 {
-	"infile":"C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\client_002_nodenoise_loudnorm.wav",
-	"outfile":"C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\client_002_nodenoise_loudnorm_denoise.wav",
+	"infile":"C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\testDatas\\noisy_data\\sp01_airport_sn0.wav",
+	"outfile":"C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\testDatas\\noisy_data\\sp01_airport_sn0_denoise.wav",
 	"frame_ms":50
 }
