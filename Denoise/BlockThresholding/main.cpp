@@ -9,7 +9,7 @@ extern "C"{
 int main(int argc, char *argv[])
 {
     //-------------Parse config
-    const char *config_file = "C:\\MarshallPolyvWorkspace\\Projects\\audioSignalProcess\\Denoise\\BlockThresholding\\config.json";
+    const char *config_file = "config.json";
     json_t *config;
     json_error_t error;
 
